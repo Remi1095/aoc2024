@@ -4,10 +4,9 @@ pub mod day2;
 use reqwest::{blocking, header::COOKIE, Url};
 use std::{
     collections::HashMap,
-    env,
     error::Error,
     fs::{self, File},
-    io::Write,
+    io::{Read, Write},
     path::PathBuf,
 };
 
@@ -16,7 +15,7 @@ pub type SolutionResult = Result<i32, AnyError>;
 pub type Runner = Box<dyn Fn() -> SolutionResult>;
 
 const INPUT_DIR: &str = "input";
-const AOC_SESSION_COOKIE_ENV: &str = "AOC_SESSION_COOKIE";
+const AOC_SESSION_COOKIE_FILE: &str = "aoc_session_cookie.txt";
 
 pub struct Problem {
     pub day: u32,
@@ -52,12 +51,11 @@ pub fn get_text_file(url: &str, directory: &str) -> Result<File, Box<dyn Error>>
 
     if !file_path.exists() {
         let client = blocking::Client::new();
+        let mut session_cookie = String::new();
+        File::open(AOC_SESSION_COOKIE_FILE)?.read_to_string(&mut session_cookie)?;
         let response_bytes = client
             .get(url)
-            .header(
-                COOKIE,
-                format!("session={}", env::var(AOC_SESSION_COOKIE_ENV)?),
-            )
+            .header(COOKIE, format!("session={}", session_cookie))
             .send()?
             .bytes()?;
         fs::create_dir_all(directory)?;
