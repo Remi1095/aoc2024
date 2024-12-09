@@ -1,13 +1,13 @@
-use std::{collections::HashMap, error::Error};
-
+use aoc2024::{solution_runners, Runner};
 use clap::{builder::RangedI64ValueParser, value_parser, Parser, Subcommand};
+use std::error::Error;
 
-const FIRST_DAY: i64 = 1;
-const LAST_DAY: i64 = 25;
-const CURRENT_DAY: i64 = 1;
+pub const FIRST_DAY: i64 = 1;
+pub const LAST_DAY: i64 = 25;
+pub const FIRST_PART: i64 = 1;
+pub const LAST_PART: i64 = 2;
 
-type AnyError = Box<dyn Error>;
-type Func = Box<dyn Fn()>;
+pub type AnyError = Box<dyn Error>;
 
 #[derive(Parser)]
 struct Cli {
@@ -24,6 +24,12 @@ enum Command {
             value_parser = day_parser(),
         )]
         day: Option<u32>,
+        #[arg(
+            short,
+            long,
+            value_parser = part_parser(),
+        )]
+        part: Option<u32>,
     },
     All,
 }
@@ -31,23 +37,40 @@ enum Command {
 fn main() -> Result<(), AnyError> {
     let cli = Cli::parse();
 
-    let solution_runners: HashMap<u32, Box<dyn Fn()>> = HashMap::new();
+    let solution_runners = solution_runners();
 
-    match cli.command {
-        Command::Run { day } => {
-            let runner = solution_runners
-                .get(&day.unwrap_or(CURRENT_DAY as u32))
-                .ok_or(format!("Day {day:?} not implemented yet"))?;
-            runner();
+    let selected_runners = match cli.command {
+        Command::Run { day, part } => {
+            let day = day.unwrap_or(
+                *solution_runners
+                    .keys()
+                    .reduce(|max_day, day: &u32| if day > max_day { day } else { max_day })
+                    .ok_or("No day implemented")?,
+            );
+            let runners = solution_runners
+                .get(&day)
+                .ok_or(format!("Day {day:?} not implemented"))?;
+            let part = part.unwrap_or(runners.len() as u32);
+            let runner = runners
+                .get(part as usize - 1)
+                .ok_or("Part does not exist")?;
+            vec![(day, part, runner)]
         }
         Command::All => {
-            let mut solution_runners = solution_runners.into_iter().collect::<Vec<(u32, Func)>>();
-            solution_runners.sort_by_key(|(day, _)| *day);
-            for (day, runner) in solution_runners {
-                print!("Day {}", day);
-                runner();
+            let mut selected: Vec<(u32, u32, &Runner)> = Vec::new();
+            for (day, runners) in solution_runners.iter() {
+                for (part, runner) in runners.iter().enumerate() {
+                    selected.push((*day, part as u32, runner));
+                }
             }
-        },
+            selected.sort_by_key(|(day, part, _)| (*day, *part));
+            selected
+        }
+    };
+    for (day, part, runner) in selected_runners {
+        println!("Day {} part {}", day, part);
+        let solution = runner()?;
+        println!("Solution: {}\n", solution);
     }
 
     Ok(())
@@ -55,4 +78,8 @@ fn main() -> Result<(), AnyError> {
 
 fn day_parser() -> RangedI64ValueParser<u32> {
     value_parser!(u32).range(FIRST_DAY..=LAST_DAY)
+}
+
+fn part_parser() -> RangedI64ValueParser<u32> {
+    value_parser!(u32).range(1..=10)
 }
