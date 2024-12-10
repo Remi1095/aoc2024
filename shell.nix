@@ -12,6 +12,7 @@ mkShell rec {
     openssl
     pkg-config
     rustup
+    gnuplot
   ];
 
   RUSTUP_TOOLCHAIN = rustToolchain;

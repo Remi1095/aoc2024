@@ -29,7 +29,7 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
     solution_runners.extend(
         [
             (1, vec![to_runner(day1::part_1), to_runner(day1::part_2)]),
-            // (2, day2::solution as fn()),
+            (2, vec![to_runner(day2::part_1), to_runner(day2::part_2)]),
         ]
         .into_iter(),
     );

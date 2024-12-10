@@ -60,7 +60,7 @@ fn main() -> Result<(), AnyError> {
             let mut selected: Vec<(u32, u32, &Runner)> = Vec::new();
             for (day, runners) in solution_runners.iter() {
                 for (part, runner) in runners.iter().enumerate() {
-                    selected.push((*day, part as u32, runner));
+                    selected.push((*day, part as u32 + 1, runner));
                 }
             }
             selected.sort_by_key(|(day, part, _)| (*day, *part));
