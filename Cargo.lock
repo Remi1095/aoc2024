@@ -88,8 +88,8 @@ dependencies = [
  "clap",
  "criterion",
  "indexmap",
- "indexset",
  "itertools 0.13.0",
+ "regex",
  "reqwest",
  "rustc-hash",
 ]
@@ -398,15 +398,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13624c2627564efccf4934284bdd98cbaa14e79b0b5a141218e507b3a823456"
 dependencies = [
  "percent-encoding",
-]
-
-[[package]]
-name = "ftree"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ae0379499242d3b9355c5069b43b9417def8c9b09903b930db1fe49318dc9e9"
-dependencies = [
- "serde",
 ]
 
 [[package]]
@@ -782,15 +773,6 @@ checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
 dependencies = [
  "equivalent",
  "hashbrown",
-]
-
-[[package]]
-name = "indexset"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6279c421b4feea3fb8e07ea6bd0934b38b641f6601d5f6677062fad15272ed57"
-dependencies = [
- "ftree",
 ]
 
 [[package]]

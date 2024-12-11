@@ -1,12 +1,10 @@
+use crate::{get_text_file, SolutionResult, INPUT_DIR};
+use itertools::Itertools;
 use std::{
     cmp::Ordering,
     fs::File,
     io::{BufRead, BufReader},
 };
-
-use itertools::Itertools;
-
-use crate::{get_text_file, SolutionResult, INPUT_DIR};
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/2/input";
 
@@ -14,7 +12,7 @@ const MIN_LEVEL_DIFF: i32 = 1;
 const MAX_LEVEL_DIFF: i32 = 3;
 
 pub fn part_1() -> SolutionResult {
-    let file = get_text_file(INPUT_URL, INPUT_DIR)?;
+    let file = get_text_file(INPUT_URL)?;
     let mut safe_reports = 0;
 
     for levels in iter_input(file) {
@@ -41,7 +39,7 @@ pub fn part_1() -> SolutionResult {
 }
 
 pub fn part_2() -> SolutionResult {
-    let file = get_text_file(INPUT_URL, INPUT_DIR)?;
+    let file = get_text_file(INPUT_URL)?;
     let mut safe_reports = 0;
 
     let is_good = |diff| (MIN_LEVEL_DIFF..=MAX_LEVEL_DIFF).contains(&diff);

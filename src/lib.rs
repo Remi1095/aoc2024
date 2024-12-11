@@ -1,5 +1,9 @@
 pub mod day1;
 pub mod day2;
+pub mod day3;
+pub mod day4;
+pub mod day5;
+pub mod day6;
 
 use reqwest::{blocking, header::COOKIE, Url};
 use std::{
@@ -24,20 +28,21 @@ pub struct Problem {
 
 pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
     let mut solution_runners: HashMap<u32, Vec<Runner>> = HashMap::new();
-    let to_runner = |fn_ptr: fn() -> SolutionResult| Box::new(fn_ptr) as Runner;
+    let f = |fn_ptr: fn() -> SolutionResult| Box::new(fn_ptr) as Runner;
 
     solution_runners.extend(
         [
-            (1, vec![to_runner(day1::part_1), to_runner(day1::part_2)]),
-            (2, vec![to_runner(day2::part_1), to_runner(day2::part_2)]),
+            (1, vec![f(day1::part_1), f(day1::part_2)]),
+            (2, vec![f(day2::part_1), f(day2::part_2)]),
+            (3, vec![f(day3::part_1), f(day3::part_2)]),
         ]
         .into_iter(),
     );
     solution_runners
 }
 
-pub fn get_text_file(url: &str, directory: &str) -> Result<File, Box<dyn Error>> {
-    // Parse the URL and extract the path
+pub fn get_text_file(url: &str) -> Result<File, Box<dyn Error>> {
+    let directory = INPUT_DIR;
     let parsed_url = Url::parse(url)?;
     let path = parsed_url.path();
     let file_name = path[1..].replace('/', "_");

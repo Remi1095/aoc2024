@@ -1,16 +1,15 @@
 // use indexset::BTreeMap;
+use crate::{get_text_file, SolutionResult, INPUT_DIR};
+use rustc_hash::FxHashMap;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
-use rustc_hash::FxHashMap;
-
-use crate::{get_text_file, SolutionResult, INPUT_DIR};
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/1/input";
 
 pub fn part_1() -> SolutionResult {
-    let file = get_text_file(INPUT_URL, INPUT_DIR)?;
+    let file = get_text_file(INPUT_URL)?;
     let mut ids_1: Vec<i32> = Vec::new();
     let mut ids_2: Vec<i32> = Vec::new();
 
@@ -21,13 +20,17 @@ pub fn part_1() -> SolutionResult {
     ids_1.sort_unstable();
     ids_2.sort_unstable();
 
-    let distance = ids_1.iter().zip(ids_2.iter()).map(|(id_1, id_2)| (id_1 - id_2).abs()).sum();
+    let distance = ids_1
+        .iter()
+        .zip(ids_2.iter())
+        .map(|(id_1, id_2)| (id_1 - id_2).abs())
+        .sum();
 
     Ok(distance)
 }
 
 pub fn part_2() -> SolutionResult {
-    let file = get_text_file(INPUT_URL, INPUT_DIR)?;
+    let file = get_text_file(INPUT_URL)?;
 
     let mut id_map_1: FxHashMap<i32, usize> = FxHashMap::default();
     let mut id_map_2: FxHashMap<i32, usize> = FxHashMap::default();
