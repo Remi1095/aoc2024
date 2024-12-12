@@ -1,9 +1,7 @@
-use std::io::Read;
-
+use crate::{get_text_file, SolutionResult};
 use itertools::Itertools;
 use regex::Regex;
-
-use crate::{get_text_file, SolutionResult};
+use std::io::Read;
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/3/input";
 
@@ -46,7 +44,6 @@ pub fn part_1() -> SolutionResult {
 pub fn part_2() -> SolutionResult {
     let mut text = String::new();
     get_text_file(INPUT_URL)?.read_to_string(&mut text)?;
-    // let re = Regex::new(r"(mul\(([0-9]+),([0-9]+)\))|(don't\(\))|(do\(\))")?;
 
     let mut tokens: Vec<Token> = Vec::new();
     let mut char_iter = text.chars().peekable();
