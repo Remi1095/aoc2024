@@ -1,5 +1,5 @@
 // use indexset::BTreeMap;
-use crate::{get_text_file, SolutionResult, INPUT_DIR};
+use crate::{get_text_file, SolutionResult};
 use rustc_hash::FxHashMap;
 use std::{
     fs::File,

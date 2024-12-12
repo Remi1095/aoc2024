@@ -1,4 +1,4 @@
-use crate::{get_text_file, SolutionResult, INPUT_DIR};
+use crate::{get_text_file, SolutionResult};
 use itertools::Itertools;
 use std::{
     cmp::Ordering,
