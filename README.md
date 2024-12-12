@@ -1,7 +1,26 @@
 # Advent of Code 2024
 
 
-## Execute
+## Run
+
+### Provide input
+
+**Option 1:**
+
+- Log in to https://adventofcode.com/
+- Enter the network tab of the page inspector
+- Refresh the page (F5) to see requests
+- Select a request and look in Cookies tab
+- Copy the `session` value
+- Create `aoc_session_cookie.txt` and part the content
+
+**Option 2:**
+
+- Create `input` directory
+- Create files in format `2024_day_<DAY>_input` for the desired days
+- Copy the inputs from https://adventofcode.com/ into the appropriate folders
+
+### Execute
 
 Replace `aoc2024` with `cargo run --release --` if using Rust cargo.
 
