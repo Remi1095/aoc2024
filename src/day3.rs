@@ -127,18 +127,21 @@ pub fn part_2() -> SolutionResult {
     }
 
     let mut enable_mul = true;
-    let mut result = 0;
-    for instruction in instructions {
-        match instruction {
-            Instruction::Mul(lhs, rhs) => {
-                if enable_mul {
-                    result += lhs * rhs
+    let result = instructions
+        .iter()
+        .filter_map(|instruction| {
+            match instruction {
+                Instruction::Mul(lhs, rhs) => {
+                    if enable_mul {
+                        return Some(lhs * rhs);
+                    }
                 }
+                Instruction::Do => enable_mul = true,
+                Instruction::Dont => enable_mul = false,
             }
-            Instruction::Do => enable_mul = true,
-            Instruction::Dont => enable_mul = false,
-        }
-    }
+            None
+        })
+        .sum();
 
     Ok(result)
 }

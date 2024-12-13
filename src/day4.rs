@@ -1,4 +1,4 @@
-use crate::{get_text_file, AnyError, SolutionResult};
+use crate::{get_text_file, SolutionResult};
 use itertools::Itertools;
 use ndarray::Array2;
 use std::{
@@ -17,7 +17,7 @@ const LAST_CHAR: char = 'S';
 
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
-    let matrix = read_input_matrix(file)?;
+    let matrix = read_input(file);
     let mut positions = vec![(1, 1), (2, 2), (3, 3)];
     let rotations = (0..8)
         .map(|_| {
@@ -25,59 +25,69 @@ pub fn part_1() -> SolutionResult {
             positions.clone()
         })
         .collect_vec();
-    let mut occurences = 0;
-    for (idx, _) in matrix.indexed_iter().filter(|(_, ch)| **ch == SOURCE_CHAR) {
-        for rotation in &rotations {
-            if OTHER_CHARS.chars().zip(rotation).all(|(ch_desired, pos)| {
+
+    let word_found = |idx, rotation: &Vec<(i32, i32)>| {
+        OTHER_CHARS
+            .chars()
+            .zip(rotation.iter())
+            .all(|(ch_desired, pos)| {
                 if let Some(shift_idx) = add_indices(idx, *pos) {
                     if let Some(ch_actual) = matrix.get(shift_idx) {
                         return *ch_actual == ch_desired;
                     }
                 }
                 false
-            }) {
-                occurences += 1;
-            }
-        }
-    }
+            })
+    };
+
+    let occurences = matrix
+        .indexed_iter()
+        .filter(|(_, ch)| **ch == SOURCE_CHAR)
+        .map(|(idx, _)| rotations.iter().filter(|r| word_found(idx, *r)).count() as i32)
+        .sum();
 
     Ok(occurences)
 }
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
-    let matrix = read_input_matrix(file)?;
+    let matrix = read_input(file);
     let corner_pairs = [((1, 1), (-1, -1)), ((-1, 1), (1, -1))];
-    let mut occurences = 0;
-    for (idx, _) in matrix.indexed_iter().filter(|(_, ch)| **ch == MIDDLE_CHAR) {
-        if corner_pairs.iter().all(|(pos_1, pos_2)| {
-            if let (Some(idx_1), Some(idx_2)) = (add_indices(idx, *pos_1), add_indices(idx, *pos_2))
-            {
-                if let (Some(ch_1), Some(ch_2)) = (matrix.get(idx_1), matrix.get(idx_2)) {
-                    return matches!(
-                        (*ch_1, *ch_2),
-                        (FIRST_CHAR, LAST_CHAR) | (LAST_CHAR, FIRST_CHAR)
-                    );
-                }
+
+    let word_found = |idx, (pos_1, pos_2): (_, _)| {
+        if let (Some(idx_1), Some(idx_2)) = (add_indices(idx, pos_1), add_indices(idx, pos_2)) {
+            if let (Some(ch_1), Some(ch_2)) = (matrix.get(idx_1), matrix.get(idx_2)) {
+                return matches!(
+                    (*ch_1, *ch_2),
+                    (FIRST_CHAR, LAST_CHAR) | (LAST_CHAR, FIRST_CHAR)
+                );
             }
-            false
-        }) {
-            occurences += 1;
         }
-    }
+        false
+    };
+
+    let occurences = matrix
+        .indexed_iter()
+        .filter(|(idx, ch)| {
+            **ch == MIDDLE_CHAR
+                && corner_pairs
+                    .iter()
+                    .all(|pos_pair| word_found(*idx, *pos_pair))
+        })
+        .count() as i32;
 
     Ok(occurences)
 }
 
-fn read_input_matrix(file: File) -> Result<Array2<char>, AnyError> {
+fn read_input(file: File) -> Array2<char> {
     let mut data = Vec::new();
     let mut cols = 0;
     for line in BufReader::new(file).lines() {
-        data.extend(line?.chars());
+        data.extend(line.unwrap().chars());
         cols += 1;
     }
     let rows = data.len() / cols;
-    Ok(Array2::from_shape_vec((rows, cols), data).unwrap())
+    Array2::from_shape_vec((rows, cols), data).unwrap()
 }
 
 fn rotate_45((x, y): (i32, i32)) -> (i32, i32) {

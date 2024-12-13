@@ -40,21 +40,35 @@ fn main() -> Result<(), AnyError> {
     let solution_runners = solution_runners();
 
     let selected_runners = match cli.command {
-        Command::Run { day, part } => {
-            let day = day.unwrap_or(
+        Command::Run { day, mut part } => {
+
+
+            let day_or_max = day.unwrap_or(
                 *solution_runners
                     .keys()
                     .reduce(|max_day, day: &u32| if day > max_day { day } else { max_day })
                     .ok_or("No day implemented")?,
             );
             let runners = solution_runners
-                .get(&day)
-                .ok_or(format!("Day {day:?} not implemented"))?;
-            let part = part.unwrap_or(runners.len() as u32);
-            let runner = runners
-                .get(part as usize - 1)
-                .ok_or("Part does not exist")?;
-            vec![(day, part, runner)]
+                .get(&day_or_max)
+                .ok_or(format!("Day {day_or_max:?} not implemented"))?;
+
+            if day == None && part == None{
+                part = Some(runners.len() as u32);
+            }
+
+            if let Some(part) = part {
+                let runner = runners
+                    .get(part as usize - 1)
+                    .ok_or("Part does not exist")?;
+                vec![(day_or_max, part, runner)]
+            } else {
+                runners
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, runner)| (day_or_max, idx as u32 + 1, runner))
+                    .collect()
+            }
         }
         Command::All => {
             let mut selected: Vec<(u32, u32, &Runner)> = Vec::new();

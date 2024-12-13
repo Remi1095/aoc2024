@@ -1,5 +1,6 @@
 // use indexset::BTreeMap;
 use crate::{get_text_file, SolutionResult};
+use itertools::Itertools;
 use rustc_hash::FxHashMap;
 use std::{
     fs::File,
@@ -40,13 +41,16 @@ pub fn part_2() -> SolutionResult {
         insert_id_fxhashmap(&mut id_map_2, id_2);
     }
 
-    let similarity = id_map_1.iter().fold(0, |acc, (id, occ_1)| {
-        if let Some(occ_2) = id_map_2.get(id) {
-            acc + *id * *occ_1 as i32 * *occ_2 as i32
-        } else {
-            acc
-        }
-    });
+    let similarity = id_map_1
+        .iter()
+        .filter_map(|(id, occ_1)| {
+            if let Some(occ_2) = id_map_2.get(id) {
+                Some(*id * *occ_1 as i32 * *occ_2 as i32)
+            } else {
+                None
+            }
+        })
+        .sum();
 
     Ok(similarity)
 }
@@ -54,11 +58,10 @@ pub fn part_2() -> SolutionResult {
 fn iter_input(file: File) -> impl Iterator<Item = (i32, i32)> {
     BufReader::new(file).lines().map(|line| {
         let line = line.unwrap();
-        let mut ids = line.split_ascii_whitespace();
-        (
-            ids.next().unwrap().parse::<i32>().unwrap(),
-            ids.next().unwrap().parse::<i32>().unwrap(),
-        )
+        line.split_ascii_whitespace()
+            .map(|ch| ch.parse::<i32>().unwrap())
+            .collect_tuple()
+            .unwrap()
     })
 }
 
