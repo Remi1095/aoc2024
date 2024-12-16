@@ -32,7 +32,7 @@ pub fn part_1() -> SolutionResult {
             }
             false
         })
-        .count() as i32;
+        .count() as i64;
 
     Ok(safe_reports)
 }
@@ -40,7 +40,7 @@ pub fn part_1() -> SolutionResult {
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
 
-    let safe_reports = iter_input(file).filter(is_safe_with_tolerance).count() as i32;
+    let safe_reports = iter_input(file).filter(is_safe_with_tolerance).count() as i64;
 
     Ok(safe_reports)
 }

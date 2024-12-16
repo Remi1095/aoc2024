@@ -43,7 +43,7 @@ pub fn part_1() -> SolutionResult {
     let occurences = matrix
         .indexed_iter()
         .filter(|(_, ch)| **ch == SOURCE_CHAR)
-        .map(|(idx, _)| rotations.iter().filter(|r| word_found(idx, *r)).count() as i32)
+        .map(|(idx, _)| rotations.iter().filter(|r| word_found(idx, *r)).count() as i64)
         .sum();
 
     Ok(occurences)
@@ -74,7 +74,7 @@ pub fn part_2() -> SolutionResult {
                     .iter()
                     .all(|pos_pair| word_found(*idx, *pos_pair))
         })
-        .count() as i32;
+        .count() as i64;
 
     Ok(occurences)
 }

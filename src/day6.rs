@@ -30,7 +30,7 @@ enum Cell {
     Visited(Direction),
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Guard {
     // (row, col)
     // (x, y)
@@ -77,35 +77,31 @@ pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (mut cells, mut guard) = read_input(file);
     let mut visited = 0;
-    while let Some(cell) = {
-        if let Ok(idx) = guard.get_position_index() {
-            cells.get_mut(idx)
-        } else {
-            None
-        }
-    } {
-        match cell {
-            Cell::Obstacle => {
-                guard.move_forward(-1);
-                guard.direction = guard.direction.rotate();
-            }
-            Cell::Empty => {
-                *cell = Cell::Visited(guard.direction.clone());
-                visited += 1;
-            }
-            Cell::Visited(prev_direction) if *prev_direction == guard.direction => {
-                panic!("Guard stuck in loop")
-            }
-            _ => {}
-        }
-        guard.move_forward(1);
+    if !walk_guard(&mut cells, &mut guard, |_| visited += 1) {
+        panic!("Guard walking in cycle");
     }
-
     Ok(visited)
 }
 
 pub fn part_2() -> SolutionResult {
-    Ok(0)
+    let file = get_text_file(INPUT_URL)?;
+    let (cells, guard) = read_input(file);
+    let mut visited = Vec::new();
+    if !walk_guard(&mut cells.clone(), &mut guard.clone(), |guard| {
+        visited.push(guard.get_position_index().unwrap())
+    }) {
+        panic!("Guard walking in cycle");
+    };
+    let loops = visited
+        .into_iter()
+        .filter(|idx| {
+            let mut cells_clone = cells.clone();
+            cells_clone[*idx] = Cell::Obstacle;
+            !walk_guard(&mut cells_clone, &mut guard.clone(), |_| {})
+        })
+        .count() as i64;
+
+    Ok(loops)
 }
 
 fn read_input(file: File) -> (Array2<Cell>, Guard) {
@@ -141,27 +137,32 @@ fn read_input(file: File) -> (Array2<Cell>, Guard) {
     )
 }
 
-fn display_cells(cells: &Array2<Cell>, guard: &Guard) {
-    for (x, row) in cells.axis_iter(Axis(0)).enumerate() {
-        for (y, cell) in row.iter().enumerate() {
-            print!(
-                "{}",
-                if guard.position == (x as isize, y as isize) {
-                    match guard.direction {
-                        Direction::Up => GUARD_UP,
-                        Direction::Right => GUARD_RIGHT,
-                        Direction::Down => GUARD_DOWN,
-                        Direction::Left => GUARD_LEFT,
-                    }
-                } else {
-                    match cell {
-                        Cell::Obstacle => OBSTACTLE,
-                        Cell::Empty => EMPTY,
-                        Cell::Visited(_) => 'X',
-                    }
-                }
-            )
+fn walk_guard<F>(cells: &mut Array2<Cell>, guard: &mut Guard, mut predicate: F) -> bool
+where
+    F: FnMut(&Guard) -> (),
+{
+    while let Some(cell) = {
+        if let Ok(idx) = guard.get_position_index() {
+            cells.get_mut(idx)
+        } else {
+            None
         }
-        println!();
+    } {
+        match cell {
+            Cell::Obstacle => {
+                guard.move_forward(-1);
+                guard.direction = guard.direction.rotate();
+            }
+            Cell::Empty => {
+                *cell = Cell::Visited(guard.direction.clone());
+                predicate(&guard);
+            }
+            Cell::Visited(prev_direction) if *prev_direction == guard.direction => {
+                return false;
+            }
+            _ => {}
+        }
+        guard.move_forward(1);
     }
+    true
 }

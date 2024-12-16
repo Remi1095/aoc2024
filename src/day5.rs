@@ -7,7 +7,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-type OrderGraph = GraphMap<i32, (), Directed, FxBuildHasher>;
+type OrderGraph = GraphMap<i64, (), Directed, FxBuildHasher>;
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/5/input";
 
@@ -18,14 +18,14 @@ pub fn part_1() -> SolutionResult {
     let result = sequences
         .into_iter()
         .filter_map(|values| {
-            let value_set: FxHashSet<i32> = values.clone().into_iter().collect();
+            let value_set: FxHashSet<i64> = values.clone().into_iter().collect();
             let filtered = NodeFiltered::from_fn(&graph, |n| value_set.contains(&n));
 
             let sorted = toposort(&filtered, None).unwrap();
 
             if *values == sorted {
                 let middle_idx = values.len() / 2 + values.len() % 2 - 1;
-                values.get(middle_idx).map(i32::clone)
+                values.get(middle_idx).map(i64::clone)
             } else {
                 None
             }
@@ -42,14 +42,14 @@ pub fn part_2() -> SolutionResult {
     let result = sequences
         .into_iter()
         .filter_map(|values| {
-            let value_set: FxHashSet<i32> = values.clone().into_iter().collect();
+            let value_set: FxHashSet<i64> = values.clone().into_iter().collect();
             let filtered = NodeFiltered::from_fn(&graph, |n| value_set.contains(&n));
 
             let sorted = toposort(&filtered, None).unwrap();
 
             if *values != sorted {
                 let middle_idx = values.len() / 2 + values.len() % 2 - 1;
-                sorted.get(middle_idx).map(i32::clone)
+                sorted.get(middle_idx).map(i64::clone)
             } else {
                 None
             }
@@ -59,10 +59,10 @@ pub fn part_2() -> SolutionResult {
     Ok(result)
 }
 
-pub fn read_input(file: File) -> (OrderGraph, Vec<Vec<i32>>) {
+pub fn read_input(file: File) -> (OrderGraph, Vec<Vec<i64>>) {
     let mut first_section = true;
     let mut graph = OrderGraph::new();
-    let mut sequences: Vec<Vec<i32>> = Vec::new();
+    let mut sequences: Vec<Vec<i64>> = Vec::new();
 
     for line in BufReader::new(file).lines() {
         let line = line.unwrap();
@@ -71,14 +71,14 @@ pub fn read_input(file: File) -> (OrderGraph, Vec<Vec<i32>>) {
         } else if first_section {
             let (v, u) = line
                 .split('|')
-                .map(|ch| ch.parse::<i32>().unwrap())
+                .map(|ch| ch.parse().unwrap())
                 .collect_tuple()
                 .unwrap();
             graph.add_edge(v, u, ());
         } else {
             sequences.push(
                 line.split(',')
-                    .map(|ch| ch.parse::<i32>().unwrap())
+                    .map(|ch| ch.parse().unwrap())
                     .collect(),
             );
         }

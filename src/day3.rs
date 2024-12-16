@@ -11,14 +11,14 @@ const DONT: &str = "don't";
 
 #[derive(Debug)]
 enum Instruction {
-    Mul(i32, i32),
+    Mul(i64, i64),
     Do,
     Dont,
 }
 
 #[derive(PartialEq, Eq, Debug)]
 enum Token {
-    Number(i32),
+    Number(i64),
     Identifier(String),
     OpenParen,
     CloseParen,
@@ -34,7 +34,7 @@ pub fn part_1() -> SolutionResult {
         .captures_iter(&text)
         .map(|c| {
             let (_, [lhs, rhs]) = c.extract();
-            lhs.parse::<i32>().unwrap() * rhs.parse::<i32>().unwrap()
+            lhs.parse::<i64>().unwrap() * rhs.parse::<i64>().unwrap()
         })
         .sum();
 

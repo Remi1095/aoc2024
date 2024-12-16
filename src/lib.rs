@@ -24,7 +24,6 @@ pub mod day7;
 pub mod day8;
 pub mod day9;
 
-use ndarray::Array2;
 use reqwest::{blocking, header::COOKIE, Url};
 use std::{
     collections::HashMap,
@@ -35,7 +34,7 @@ use std::{
 };
 
 pub type AnyError = Box<dyn Error>;
-pub type SolutionResult = Result<i32, AnyError>;
+pub type SolutionResult = Result<i64, AnyError>;
 pub type Runner = Box<dyn Fn() -> SolutionResult>;
 
 const INPUT_DIR: &str = "input";
@@ -57,7 +56,8 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
             (3, vec![f(day3::part_1), f(day3::part_2)]),
             (4, vec![f(day4::part_1), f(day4::part_2)]),
             (5, vec![f(day5::part_1), f(day5::part_2)]),
-            (6, vec![f(day6::part_1)]),
+            (6, vec![f(day6::part_1), f(day6::part_2)]),
+            (7, vec![f(day7::part_1), f(day7::part_2)]),
         ]
         .into_iter(),
     );
