@@ -28,8 +28,9 @@ pub fn part_1() -> SolutionResult {
             let sorted = toposort(&filtered, None).unwrap();
 
             if *values == sorted {
+                let middle_idx = values.len() / 2 + values.len() % 2 - 1;
                 values
-                    .get(values.len() / 2 + values.len() % 2 - 1)
+                    .get(middle_idx)
                     .map(i32::clone)
             } else {
                 None
@@ -43,52 +44,21 @@ pub fn part_1() -> SolutionResult {
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (graph, sequences) = read_input(file);
-    // let order: FxHashMap<i32, usize> = toposort(&graph, None)
-    //     .unwrap()
-    //     .into_iter()
-    //     .enumerate()
-    //     .map(|(idx, val)| (val, idx))
-    //     .collect();
 
     let result = sequences
         .into_iter()
-        .map(|values| {
+        .filter_map(|values| {
             let value_set: FxHashSet<i32> = values.clone().into_iter().collect();
             let filtered = NodeFiltered::from_fn(&graph, |n| value_set.contains(&n));
 
             let sorted = toposort(&filtered, None).unwrap();
 
-            // let values_clone = values.clone();
-            // let compare = |a: &_, b: &_| {
-            //     if has_path_connecting(&filtered, *a, *b, None) {
-            //         Ordering::Less
-            //     } else if has_path_connecting(&filtered, *a, *b, None) {
-            //         Ordering::Greater
-            //     } else {
-            //         Ordering::Equal
-            //     }
-            // };
-
-            let middle_idx = values.len() / 2 + values.len() % 2 - 1;
-            if sorted != *values {
-                println!("");
-                println!("UNSORTED");
-                println!(
-                    "filtered {:?}",
-                    values
-                        .iter()
-                        .map(|a| (a, filtered.edges(*a).map(|(_, b, _)| b).collect_vec()))
-                        .collect_vec()
-                );
-                println!("values {:?}", values);
-                println!("sorted {:?}", sorted);
-                println!("median {}", sorted[middle_idx]);
-                assert!(sorted
-                    .iter()
-                    .tuple_combinations()
-                    .all(|(a, b)| graph.contains_edge(*a, *b)));
+            if *values != sorted {
+                let middle_idx = values.len() / 2 + values.len() % 2 - 1;
+                sorted.get(middle_idx).map(i32::clone)
+            } else {
+                None
             }
-            sorted[middle_idx]
         })
         .sum();
 
