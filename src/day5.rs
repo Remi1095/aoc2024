@@ -1,10 +1,6 @@
 use crate::{get_text_file, SolutionResult};
 use itertools::Itertools;
-use petgraph::{
-    algo::{has_path_connecting, toposort},
-    prelude::*,
-    visit::{IntoEdges, NodeFiltered},
-};
+use petgraph::{algo::toposort, prelude::*, visit::NodeFiltered};
 use rustc_hash::{FxBuildHasher, FxHashSet};
 use std::{
     fs::File,
@@ -29,9 +25,7 @@ pub fn part_1() -> SolutionResult {
 
             if *values == sorted {
                 let middle_idx = values.len() / 2 + values.len() % 2 - 1;
-                values
-                    .get(middle_idx)
-                    .map(i32::clone)
+                values.get(middle_idx).map(i32::clone)
             } else {
                 None
             }

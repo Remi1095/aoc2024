@@ -34,32 +34,11 @@ pub fn part_1() -> SolutionResult {
         })
         .count() as i32;
 
-    // for levels in iter_input(file) {
-    //     if levels.len() <= 1 {
-    //         safe_reports += 1;
-    //         continue;
-    //     }
-    //     let sign = match levels[0].cmp(&levels[1]) {
-    //         Ordering::Less => 1,
-    //         Ordering::Greater => -1,
-    //         Ordering::Equal => continue,
-    //     };
-    //     if levels
-    //         .into_iter()
-    //         .tuple_windows::<(_, _)>()
-    //         .map(|(l1, l2)| sign * (l2 - l1))
-    //         .all(|diff| (MIN_LEVEL_DIFF..=MAX_LEVEL_DIFF).contains(&diff))
-    //     {
-    //         safe_reports += 1;
-    //     }
-    // }
-
     Ok(safe_reports)
 }
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
-
 
     let safe_reports = iter_input(file).filter(is_safe_with_tolerance).count() as i32;
 

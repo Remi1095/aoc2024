@@ -1,6 +1,6 @@
 use crate::{get_text_file, SolutionResult};
 use itertools::Itertools;
-use ndarray::Array2;
+use ndarray::prelude::*;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
@@ -81,11 +81,12 @@ pub fn part_2() -> SolutionResult {
 
 fn read_input(file: File) -> Array2<char> {
     let mut data = Vec::new();
-    let mut cols = 0;
-    for line in BufReader::new(file).lines() {
-        data.extend(line.unwrap().chars());
-        cols += 1;
-    }
+    let cols = BufReader::new(file)
+        .lines()
+        .map(|line| {
+            data.extend(line.unwrap().chars());
+        })
+        .count();
     let rows = data.len() / cols;
     Array2::from_shape_vec((rows, cols), data).unwrap()
 }

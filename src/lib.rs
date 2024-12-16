@@ -24,6 +24,7 @@ pub mod day7;
 pub mod day8;
 pub mod day9;
 
+use ndarray::Array2;
 use reqwest::{blocking, header::COOKIE, Url};
 use std::{
     collections::HashMap,
@@ -56,6 +57,7 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
             (3, vec![f(day3::part_1), f(day3::part_2)]),
             (4, vec![f(day4::part_1), f(day4::part_2)]),
             (5, vec![f(day5::part_1), f(day5::part_2)]),
+            (6, vec![f(day6::part_1)]),
         ]
         .into_iter(),
     );
