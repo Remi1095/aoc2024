@@ -3,13 +3,12 @@ use itertools::Itertools;
 use petgraph::{
     algo::{has_path_connecting, toposort},
     prelude::*,
-    visit::{EdgeFiltered, IntoEdges, NodeFiltered},
+    visit::{IntoEdges, NodeFiltered},
 };
-use rustc_hash::{FxBuildHasher, FxHashMap, FxHashSet};
+use rustc_hash::{FxBuildHasher, FxHashSet};
 use std::{
-    cmp::Ordering,
     fs::File,
-    io::{BufRead, BufReader}, ops::Deref,
+    io::{BufRead, BufReader},
 };
 
 type OrderGraph = GraphMap<i32, (), Directed, FxBuildHasher>;
@@ -19,29 +18,19 @@ const INPUT_URL: &str = "https://adventofcode.com/2024/day/5/input";
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (graph, sequences) = read_input(file);
-    // println!("graph {:?}\n", graph);
-    // println!("values {:?}\n", sequences);
+
     let result = sequences
         .into_iter()
         .filter_map(|values| {
             let value_set: FxHashSet<i32> = values.clone().into_iter().collect();
-            // let filtered = NodeFiltered::from_fn(&graph, |n| {
-            //     value_set.contains(&n)
-            // });
             let filtered = NodeFiltered::from_fn(&graph, |n| value_set.contains(&n));
-
-            // println!(
-            //     "filtered {:?}",
-            //     values
-            //         .iter()
-            //         .map(|a| (a, filtered.edges(*a).map(|(_, b, _)| b).collect_vec()))
-            //         .collect_vec()
-            // );
 
             let sorted = toposort(&filtered, None).unwrap();
 
             if *values == sorted {
-                values.get(values.len() / 2 + values.len() % 2 - 1).map(i32::clone)
+                values
+                    .get(values.len() / 2 + values.len() % 2 - 1)
+                    .map(i32::clone)
             } else {
                 None
             }
@@ -64,21 +53,10 @@ pub fn part_2() -> SolutionResult {
     let result = sequences
         .into_iter()
         .map(|values| {
-            println!("values {:?}", values);
             let value_set: FxHashSet<i32> = values.clone().into_iter().collect();
             let filtered = NodeFiltered::from_fn(&graph, |n| value_set.contains(&n));
-            // let filtered = &graph;
-
-            // println!(
-            //     "filtered {:?}",
-            //     values
-            //         .iter()
-            //         .map(|a| (a, filtered.edges(*a).map(|(_, b, _)| b).collect_vec()))
-            //         .collect_vec()
-            // );
 
             let sorted = toposort(&filtered, None).unwrap();
-            println!("sorted {:?}", sorted);
 
             // let values_clone = values.clone();
             // let compare = |a: &_, b: &_| {
@@ -92,17 +70,24 @@ pub fn part_2() -> SolutionResult {
             // };
 
             let middle_idx = values.len() / 2 + values.len() % 2 - 1;
-            // let (_, median, _) = values.select_nth_unstable_by(middle_idx, compare);
-            // println!("median {} median 2 {}", median, values_sorted[middle_idx]);
-            println!("median {}",sorted[middle_idx]);
             if sorted != *values {
+                println!("");
                 println!("UNSORTED");
+                println!(
+                    "filtered {:?}",
+                    values
+                        .iter()
+                        .map(|a| (a, filtered.edges(*a).map(|(_, b, _)| b).collect_vec()))
+                        .collect_vec()
+                );
+                println!("values {:?}", values);
+                println!("sorted {:?}", sorted);
+                println!("median {}", sorted[middle_idx]);
                 assert!(sorted
                     .iter()
                     .tuple_combinations()
-                    .all(|(a, b)| has_path_connecting(&graph, *a, *b, None)));
+                    .all(|(a, b)| graph.contains_edge(*a, *b)));
             }
-            // assert!(*median == values_sorted[middle_idx]);
             sorted[middle_idx]
         })
         .sum();
