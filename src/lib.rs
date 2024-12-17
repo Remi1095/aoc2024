@@ -23,6 +23,7 @@ pub mod day6;
 pub mod day7;
 pub mod day8;
 pub mod day9;
+pub mod math;
 
 use reqwest::{blocking, header::COOKIE, Url};
 use std::{
@@ -58,6 +59,8 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
             (5, vec![f(day5::part_1), f(day5::part_2)]),
             (6, vec![f(day6::part_1), f(day6::part_2)]),
             (7, vec![f(day7::part_1), f(day7::part_2)]),
+            (8, vec![f(day8::part_1), f(day8::part_2)]),
+            (9, vec![f(day9::part_1)]),
         ]
         .into_iter(),
     );

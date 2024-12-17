@@ -1,9 +1,7 @@
-use crate::{get_text_file, SolutionResult};
+use crate::{get_text_file, math::Vec2, SolutionResult};
 use ndarray::prelude::*;
 use std::{
-    error::Error,
-    fs::File,
-    io::{BufRead, BufReader},
+    error::Error, fs::File, io::{BufRead, BufReader}
 };
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/6/input";
@@ -32,23 +30,22 @@ enum Cell {
 
 #[derive(Clone, Debug)]
 struct Guard {
-    // (row, col)
     // (x, y)
-    position: (isize, isize),
+    position: Vec2<isize>,
     direction: Direction,
 }
 impl Guard {
     fn move_forward(&mut self, step: isize) {
         match self.direction {
-            Direction::Up => self.position.0 -= step,
-            Direction::Right => self.position.1 += step,
-            Direction::Down => self.position.0 += step,
-            Direction::Left => self.position.1 -= step,
+            Direction::Up => self.position.y -= step,
+            Direction::Right => self.position.x += step,
+            Direction::Down => self.position.y += step,
+            Direction::Left => self.position.x -= step,
         }
     }
 
     fn get_position_index(&self) -> Result<(usize, usize), Box<dyn Error>> {
-        Ok((self.position.0.try_into()?, self.position.1.try_into()?))
+        Ok((self.position.y.try_into()?, self.position.x.try_into()?))
     }
 }
 
@@ -76,6 +73,7 @@ impl Direction {
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (mut cells, mut guard) = read_input(file);
+    println!("{:?}", cells);
     let mut visited = 0;
     if !walk_guard(&mut cells, &mut guard, |_| visited += 1) {
         panic!("Guard walking in cycle");
@@ -118,7 +116,10 @@ fn read_input(file: File) -> (Array2<Cell>, Guard) {
                 _ => {
                     if let (Some(direction), None) = (Direction::new(ch), &guard) {
                         guard = Some(Guard {
-                            position: (row as isize, col as isize),
+                            position: Vec2 {
+                                x: col as isize,
+                                y: row as isize,
+                            },
                             direction: direction.clone(),
                         });
                         Cell::Empty
@@ -163,6 +164,33 @@ where
             _ => {}
         }
         guard.move_forward(1);
+        // display_cells(&cells, &guard);
+        // println!();
     }
     true
 }
+
+// fn display_cells(cells: &Array2<Cell>, guard: &Guard) {
+//     for (y, row) in cells.axis_iter(Axis(0)).enumerate() {
+//         for (x, cell) in row.iter().enumerate() {
+//             print!(
+//                 "{}",
+//                 if guard.position == (Vec2 {x: x as isize, y: y as isize}) {
+//                     match guard.direction {
+//                         Direction::Up => GUARD_UP,
+//                         Direction::Right => GUARD_RIGHT,
+//                         Direction::Down => GUARD_DOWN,
+//                         Direction::Left => GUARD_LEFT,
+//                     }
+//                 } else {
+//                     match cell {
+//                         Cell::Obstacle => OBSTACTLE,
+//                         Cell::Empty => EMPTY,
+//                         Cell::Visited(_) => 'X',
+//                     }
+//                 }
+//             )
+//         }
+//         println!();
+//     }
+// }

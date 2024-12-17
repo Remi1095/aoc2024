@@ -1,6 +1,7 @@
-use crate::{get_text_file, SolutionResult};
+use crate::{get_text_file, math::Vec2, SolutionResult};
 use itertools::Itertools;
 use ndarray::prelude::*;
+use num::CheckedAdd;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
@@ -18,21 +19,20 @@ const LAST_CHAR: char = 'S';
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let matrix = read_input(file);
-    let mut positions = vec![(1, 1), (2, 2), (3, 3)];
+    let mut positions = (1..=3).map(|i: isize| Vec2 { x: i, y: i }).collect_vec();
     let rotations = (0..8)
         .map(|_| {
             positions = positions.iter().map(|arg0| rotate_45(*arg0)).collect();
             positions.clone()
         })
         .collect_vec();
-
-    let word_found = |idx, rotation: &Vec<(i32, i32)>| {
+    let word_found = |idx: Vec2<usize>, rotation: &Vec<Vec2<isize>>| {
         OTHER_CHARS
             .chars()
             .zip(rotation.iter())
             .all(|(ch_desired, pos)| {
                 if let Some(shift_idx) = add_indices(idx, *pos) {
-                    if let Some(ch_actual) = matrix.get(shift_idx) {
+                    if let Some(ch_actual) = matrix.get(shift_idx.as_tuple()) {
                         return *ch_actual == ch_desired;
                     }
                 }
@@ -43,7 +43,12 @@ pub fn part_1() -> SolutionResult {
     let occurences = matrix
         .indexed_iter()
         .filter(|(_, ch)| **ch == SOURCE_CHAR)
-        .map(|(idx, _)| rotations.iter().filter(|r| word_found(idx, *r)).count() as i64)
+        .map(|(idx, _)| {
+            rotations
+                .iter()
+                .filter(|r| word_found(Vec2::from_tuple(idx), *r))
+                .count() as i64
+        })
         .sum();
 
     Ok(occurences)
@@ -52,11 +57,18 @@ pub fn part_1() -> SolutionResult {
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let matrix = read_input(file);
-    let corner_pairs = [((1, 1), (-1, -1)), ((-1, 1), (1, -1))];
-
+    let mut corner = Vec2 { x: 1, y: 1 };
+    let corner_pairs = (0..2)
+        .map(|_| {
+            corner = rotate_90(corner);
+            (corner, -corner)
+        })
+        .collect_vec();
     let word_found = |idx, (pos_1, pos_2): (_, _)| {
         if let (Some(idx_1), Some(idx_2)) = (add_indices(idx, pos_1), add_indices(idx, pos_2)) {
-            if let (Some(ch_1), Some(ch_2)) = (matrix.get(idx_1), matrix.get(idx_2)) {
+            if let (Some(ch_1), Some(ch_2)) =
+                (matrix.get(idx_1.as_tuple()), matrix.get(idx_2.as_tuple()))
+            {
                 return matches!(
                     (*ch_1, *ch_2),
                     (FIRST_CHAR, LAST_CHAR) | (LAST_CHAR, FIRST_CHAR)
@@ -72,7 +84,7 @@ pub fn part_2() -> SolutionResult {
             **ch == MIDDLE_CHAR
                 && corner_pairs
                     .iter()
-                    .all(|pos_pair| word_found(*idx, *pos_pair))
+                    .all(|pos_pair| word_found(Vec2::from_tuple(*idx), *pos_pair))
         })
         .count() as i64;
 
@@ -81,28 +93,32 @@ pub fn part_2() -> SolutionResult {
 
 fn read_input(file: File) -> Array2<char> {
     let mut data = Vec::new();
-    let cols = BufReader::new(file)
+    let rows = BufReader::new(file)
         .lines()
         .map(|line| {
             data.extend(line.unwrap().chars());
         })
         .count();
-    let rows = data.len() / cols;
+    let cols = data.len() / rows;
     Array2::from_shape_vec((rows, cols), data).unwrap()
 }
 
-fn rotate_45((x, y): (i32, i32)) -> (i32, i32) {
-    let scale = i32::max(x.abs(), y.abs());
-    ((x - y).signum() * scale, (x + y).signum() * scale)
+fn rotate_45(Vec2 { x, y }: Vec2<isize>) -> Vec2<isize> {
+    let scale = isize::max(x.abs(), y.abs());
+    Vec2 {
+        x: (x - y).signum() * scale,
+        y: (x + y).signum() * scale,
+    }
 }
 
-// fn rotate_90((x, y): (i32, i32)) -> (i32, i32) {
-//     (-y, x)
-// }
+fn rotate_90(Vec2 { x, y }: Vec2<isize>) -> Vec2<isize> {
+    Vec2 { x: -y, y: x }
+}
 
-fn add_indices(idx: (usize, usize), pos: (i32, i32)) -> Option<(usize, usize)> {
-    Some((
-        (idx.0 as i32 + pos.0).try_into().ok()?,
-        (idx.1 as i32 + pos.1).try_into().ok()?,
-    ))
+fn add_indices(idx: Vec2<usize>, pos: Vec2<isize>) -> Option<Vec2<usize>> {
+    idx.convert::<isize>()
+        .unwrap()
+        .checked_add(&pos)
+        .map(Vec2::convert::<usize>)
+        .flatten()
 }
