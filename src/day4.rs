@@ -1,7 +1,6 @@
 use crate::{get_text_file, math::Vec2, SolutionResult};
 use itertools::Itertools;
 use ndarray::prelude::*;
-use num::CheckedAdd;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
@@ -32,7 +31,7 @@ pub fn part_1() -> SolutionResult {
             .zip(rotation.iter())
             .all(|(ch_desired, pos)| {
                 if let Some(shift_idx) = add_indices(idx, *pos) {
-                    if let Some(ch_actual) = matrix.get(shift_idx.as_tuple()) {
+                    if let Some(ch_actual) = matrix.get(shift_idx) {
                         return *ch_actual == ch_desired;
                     }
                 }
@@ -46,7 +45,7 @@ pub fn part_1() -> SolutionResult {
         .map(|(idx, _)| {
             rotations
                 .iter()
-                .filter(|r| word_found(Vec2::from_tuple(idx), *r))
+                .filter(|r| word_found(Vec2::from_index_tuple(idx), *r))
                 .count() as i64
         })
         .sum();
@@ -66,9 +65,7 @@ pub fn part_2() -> SolutionResult {
         .collect_vec();
     let word_found = |idx, (pos_1, pos_2): (_, _)| {
         if let (Some(idx_1), Some(idx_2)) = (add_indices(idx, pos_1), add_indices(idx, pos_2)) {
-            if let (Some(ch_1), Some(ch_2)) =
-                (matrix.get(idx_1.as_tuple()), matrix.get(idx_2.as_tuple()))
-            {
+            if let (Some(ch_1), Some(ch_2)) = (matrix.get(idx_1), matrix.get(idx_2)) {
                 return matches!(
                     (*ch_1, *ch_2),
                     (FIRST_CHAR, LAST_CHAR) | (LAST_CHAR, FIRST_CHAR)
@@ -84,7 +81,7 @@ pub fn part_2() -> SolutionResult {
             **ch == MIDDLE_CHAR
                 && corner_pairs
                     .iter()
-                    .all(|pos_pair| word_found(Vec2::from_tuple(*idx), *pos_pair))
+                    .all(|pos_pair| word_found(Vec2::from_index_tuple(*idx), *pos_pair))
         })
         .count() as i64;
 
@@ -116,9 +113,5 @@ fn rotate_90(Vec2 { x, y }: Vec2<isize>) -> Vec2<isize> {
 }
 
 fn add_indices(idx: Vec2<usize>, pos: Vec2<isize>) -> Option<Vec2<usize>> {
-    idx.convert::<isize>()
-        .unwrap()
-        .checked_add(&pos)
-        .map(Vec2::convert::<usize>)
-        .flatten()
+    (idx.convert::<isize>().unwrap() + pos).convert::<usize>()
 }

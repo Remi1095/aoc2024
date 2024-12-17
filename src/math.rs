@@ -1,5 +1,6 @@
-use std::ops::{Add, Neg, Sub};
+use std::{fmt::Debug, ops::{Add, Neg, Sub}};
 
+use ndarray::{Dim, Dimension, Ix2, NdIndex};
 use num::{
     CheckedAdd, CheckedSub,  NumCast, Signed,
     ToPrimitive,
@@ -18,6 +19,15 @@ impl<T> Vec2<T> {
 
     pub fn from_tuple(tup: (T, T)) -> Self {
         Self { x: tup.0, y: tup.1 }
+    }
+
+   
+
+}
+
+impl Vec2<usize> {
+    pub fn from_index_tuple(idx: (usize, usize)) -> Self {
+        Self { x: idx.1, y: idx.0 }
     }
 }
 
@@ -123,5 +133,21 @@ where
             x: -self.x,
             y: -self.y,
         }
+    }
+}
+
+
+
+unsafe impl NdIndex<Ix2> for Vec2<usize> {
+    fn index_checked(&self, dim: &Ix2, strides: &Ix2) -> Option<isize> {
+        if self.y < dim[0] && self.x < dim[1] {
+            Some(self.index_unchecked(strides))
+        } else {
+            None
+        }
+    }
+
+    fn index_unchecked(&self, strides: &Ix2) -> isize {
+        (self.y * strides[0] + self.x * strides[1]) as isize
     }
 }

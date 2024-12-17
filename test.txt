@@ -1,87 +1,301 @@
-Day 9 part 1
+Day 10 part 1
+trail_seqence {0: 1, 6: 7, 7: 8, 5: 6, 1: 2, 3: 4, 8: 9, 4: 5, 2: 3}
 
-id 9
-used Block { size: 2, offset: 40 }
-free Block { size: 3, offset: 2 }
-blocks_moved 2 first 2 last 3
-checksum 45
-new used Block { size: 0, offset: 40 }
-new free Block { size: 1, offset: 4 }
+trailhead Vec2 { x: 2, y: 0 }
 
-id 8
-used Block { size: 4, offset: 36 }
-free Block { size: 1, offset: 4 }
-blocks_moved 1 first 4 last 4
-checksum 32
-new used Block { size: 3, offset: 36 }
-new free Block { size: 0, offset: 5 }
+trail_item 0
+positions {Vec2 { x: 2, y: 0 }}
 
-id 8
-used Block { size: 3, offset: 36 }
-free Block { size: 3, offset: 8 }
-blocks_moved 3 first 8 last 10
-checksum 216
-new used Block { size: 0, offset: 36 }
-new free Block { size: 0, offset: 11 }
+trail_item 1
+positions {Vec2 { x: 2, y: 1 }, Vec2 { x: 3, y: 0 }}
 
-id 7
-used Block { size: 3, offset: 32 }
-free Block { size: 3, offset: 12 }
-blocks_moved 3 first 12 last 14
-checksum 273
-new used Block { size: 0, offset: 32 }
-new free Block { size: 0, offset: 15 }
+trail_item 2
+positions {Vec2 { x: 3, y: 1 }}
 
-id 6
-used Block { size: 4, offset: 27 }
-free Block { size: 1, offset: 18 }
-blocks_moved 1 first 18 last 18
-checksum 108
-new used Block { size: 3, offset: 27 }
-new free Block { size: 0, offset: 19 }
+trail_item 3
+positions {Vec2 { x: 3, y: 2 }}
 
-id 6
-used Block { size: 3, offset: 27 }
-free Block { size: 1, offset: 21 }
-blocks_moved 1 first 21 last 21
-checksum 126
-new used Block { size: 2, offset: 27 }
-new free Block { size: 0, offset: 22 }
+trail_item 4
+positions {Vec2 { x: 3, y: 3 }, Vec2 { x: 2, y: 2 }}
 
-id 6
-used Block { size: 2, offset: 27 }
-free Block { size: 1, offset: 26 }
-blocks_moved 1 first 26 last 26
-checksum 156
-new used Block { size: 1, offset: 27 }
-new free Block { size: 0, offset: 27 }
+trail_item 5
+positions {Vec2 { x: 2, y: 3 }}
 
-id 6
-used Block { size: 1, offset: 27 }
-checksum 162
+trail_item 6
+positions {Vec2 { x: 2, y: 4 }, Vec2 { x: 1, y: 3 }}
 
-id 5
-used Block { size: 4, offset: 22 }
-checksum 470
+trail_item 7
+positions {Vec2 { x: 3, y: 4 }, Vec2 { x: 1, y: 2 }}
 
-id 4
-used Block { size: 2, offset: 19 }
-checksum 156
+trail_item 8
+positions {Vec2 { x: 1, y: 1 }, Vec2 { x: 4, y: 4 }, Vec2 { x: 0, y: 2 }}
 
-id 3
-used Block { size: 3, offset: 15 }
-checksum 144
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 1, y: 0 }, Vec2 { x: 4, y: 5 }, Vec2 { x: 4, y: 3 }, Vec2 { x: 0, y: 3 }}
+score 5
 
-id 2
-used Block { size: 1, offset: 11 }
-checksum 22
+trailhead Vec2 { x: 4, y: 0 }
 
-id 1
-used Block { size: 3, offset: 5 }
-checksum 18
+trail_item 0
+positions {Vec2 { x: 4, y: 0 }}
 
-id 0
-used Block { size: 2, offset: 0 }
-checksum 0
-Solution: 1928
+trail_item 1
+positions {Vec2 { x: 3, y: 0 }, Vec2 { x: 5, y: 0 }, Vec2 { x: 4, y: 1 }}
+
+trail_item 2
+positions {Vec2 { x: 3, y: 1 }, Vec2 { x: 6, y: 0 }}
+
+trail_item 3
+positions {Vec2 { x: 7, y: 0 }, Vec2 { x: 3, y: 2 }}
+
+trail_item 4
+positions {Vec2 { x: 7, y: 1 }, Vec2 { x: 3, y: 3 }, Vec2 { x: 2, y: 2 }}
+
+trail_item 5
+positions {Vec2 { x: 7, y: 2 }, Vec2 { x: 2, y: 3 }}
+
+trail_item 6
+positions {Vec2 { x: 6, y: 2 }, Vec2 { x: 2, y: 4 }, Vec2 { x: 1, y: 3 }}
+
+trail_item 7
+positions {Vec2 { x: 3, y: 4 }, Vec2 { x: 1, y: 2 }, Vec2 { x: 6, y: 3 }, Vec2 { x: 6, y: 1 }}
+
+trail_item 8
+positions {Vec2 { x: 5, y: 3 }, Vec2 { x: 5, y: 1 }, Vec2 { x: 1, y: 1 }, Vec2 { x: 4, y: 4 }, Vec2 { x: 0, y: 2 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 5, y: 2 }, Vec2 { x: 1, y: 0 }, Vec2 { x: 4, y: 3 }, Vec2 { x: 4, y: 5 }, Vec2 { x: 0, y: 3 }}
+score 6
+
+trailhead Vec2 { x: 4, y: 2 }
+
+trail_item 0
+positions {Vec2 { x: 4, y: 2 }}
+
+trail_item 1
+positions {Vec2 { x: 4, y: 1 }}
+
+trail_item 2
+positions {Vec2 { x: 3, y: 1 }}
+
+trail_item 3
+positions {Vec2 { x: 3, y: 2 }}
+
+trail_item 4
+positions {Vec2 { x: 3, y: 3 }, Vec2 { x: 2, y: 2 }}
+
+trail_item 5
+positions {Vec2 { x: 2, y: 3 }}
+
+trail_item 6
+positions {Vec2 { x: 2, y: 4 }, Vec2 { x: 1, y: 3 }}
+
+trail_item 7
+positions {Vec2 { x: 3, y: 4 }, Vec2 { x: 1, y: 2 }}
+
+trail_item 8
+positions {Vec2 { x: 1, y: 1 }, Vec2 { x: 4, y: 4 }, Vec2 { x: 0, y: 2 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 1, y: 0 }, Vec2 { x: 4, y: 5 }, Vec2 { x: 4, y: 3 }, Vec2 { x: 0, y: 3 }}
+score 5
+
+trailhead Vec2 { x: 6, y: 4 }
+
+trail_item 0
+positions {Vec2 { x: 6, y: 4 }}
+
+trail_item 1
+positions {Vec2 { x: 6, y: 5 }}
+
+trail_item 2
+positions {Vec2 { x: 7, y: 5 }}
+
+trail_item 3
+positions {Vec2 { x: 7, y: 4 }}
+
+trail_item 4
+positions {Vec2 { x: 7, y: 3 }}
+
+trail_item 5
+positions {Vec2 { x: 7, y: 2 }}
+
+trail_item 6
+positions {Vec2 { x: 6, y: 2 }}
+
+trail_item 7
+positions {Vec2 { x: 6, y: 3 }, Vec2 { x: 6, y: 1 }}
+
+trail_item 8
+positions {Vec2 { x: 5, y: 3 }, Vec2 { x: 5, y: 1 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 5, y: 2 }, Vec2 { x: 4, y: 3 }}
+score 3
+
+trailhead Vec2 { x: 2, y: 5 }
+
+trail_item 0
+positions {Vec2 { x: 2, y: 5 }}
+
+trail_item 1
+positions {Vec2 { x: 3, y: 5 }}
+
+trail_item 2
+positions {Vec2 { x: 3, y: 6 }}
+
+trail_item 3
+positions {Vec2 { x: 2, y: 6 }}
+
+trail_item 4
+positions {Vec2 { x: 2, y: 7 }}
+
+trail_item 5
+positions {Vec2 { x: 3, y: 7 }}
+
+trail_item 6
+positions {Vec2 { x: 4, y: 7 }}
+
+trail_item 7
+positions {Vec2 { x: 5, y: 7 }}
+
+trail_item 8
+positions {Vec2 { x: 5, y: 6 }}
+
+trail_item 9
+positions {Vec2 { x: 4, y: 6 }}
+score 1
+
+trailhead Vec2 { x: 5, y: 5 }
+
+trail_item 0
+positions {Vec2 { x: 5, y: 5 }}
+
+trail_item 1
+positions {Vec2 { x: 6, y: 5 }}
+
+trail_item 2
+positions {Vec2 { x: 7, y: 5 }}
+
+trail_item 3
+positions {Vec2 { x: 7, y: 4 }}
+
+trail_item 4
+positions {Vec2 { x: 7, y: 3 }}
+
+trail_item 5
+positions {Vec2 { x: 7, y: 2 }}
+
+trail_item 6
+positions {Vec2 { x: 6, y: 2 }}
+
+trail_item 7
+positions {Vec2 { x: 6, y: 3 }, Vec2 { x: 6, y: 1 }}
+
+trail_item 8
+positions {Vec2 { x: 5, y: 3 }, Vec2 { x: 5, y: 1 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 5, y: 2 }, Vec2 { x: 4, y: 3 }}
+score 3
+
+trailhead Vec2 { x: 0, y: 6 }
+
+trail_item 0
+positions {Vec2 { x: 0, y: 6 }}
+
+trail_item 1
+positions {Vec2 { x: 1, y: 6 }, Vec2 { x: 0, y: 7 }}
+
+trail_item 2
+positions {Vec2 { x: 1, y: 5 }}
+
+trail_item 3
+positions {Vec2 { x: 0, y: 5 }}
+
+trail_item 4
+positions {Vec2 { x: 0, y: 4 }}
+
+trail_item 5
+positions {Vec2 { x: 1, y: 4 }}
+
+trail_item 6
+positions {Vec2 { x: 2, y: 4 }, Vec2 { x: 1, y: 3 }}
+
+trail_item 7
+positions {Vec2 { x: 3, y: 4 }, Vec2 { x: 1, y: 2 }}
+
+trail_item 8
+positions {Vec2 { x: 1, y: 1 }, Vec2 { x: 4, y: 4 }, Vec2 { x: 0, y: 2 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 1, y: 0 }, Vec2 { x: 4, y: 5 }, Vec2 { x: 4, y: 3 }, Vec2 { x: 0, y: 3 }}
+score 5
+
+trailhead Vec2 { x: 6, y: 6 }
+
+trail_item 0
+positions {Vec2 { x: 6, y: 6 }}
+
+trail_item 1
+positions {Vec2 { x: 6, y: 5 }, Vec2 { x: 7, y: 6 }}
+
+trail_item 2
+positions {Vec2 { x: 7, y: 5 }, Vec2 { x: 7, y: 7 }}
+
+trail_item 3
+positions {Vec2 { x: 7, y: 4 }, Vec2 { x: 6, y: 7 }}
+
+trail_item 4
+positions {Vec2 { x: 7, y: 3 }}
+
+trail_item 5
+positions {Vec2 { x: 7, y: 2 }}
+
+trail_item 6
+positions {Vec2 { x: 6, y: 2 }}
+
+trail_item 7
+positions {Vec2 { x: 6, y: 3 }, Vec2 { x: 6, y: 1 }}
+
+trail_item 8
+positions {Vec2 { x: 5, y: 3 }, Vec2 { x: 5, y: 1 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 5, y: 2 }, Vec2 { x: 4, y: 3 }}
+score 3
+
+trailhead Vec2 { x: 1, y: 7 }
+
+trail_item 0
+positions {Vec2 { x: 1, y: 7 }}
+
+trail_item 1
+positions {Vec2 { x: 0, y: 7 }, Vec2 { x: 1, y: 6 }}
+
+trail_item 2
+positions {Vec2 { x: 1, y: 5 }}
+
+trail_item 3
+positions {Vec2 { x: 0, y: 5 }}
+
+trail_item 4
+positions {Vec2 { x: 0, y: 4 }}
+
+trail_item 5
+positions {Vec2 { x: 1, y: 4 }}
+
+trail_item 6
+positions {Vec2 { x: 2, y: 4 }, Vec2 { x: 1, y: 3 }}
+
+trail_item 7
+positions {Vec2 { x: 3, y: 4 }, Vec2 { x: 1, y: 2 }}
+
+trail_item 8
+positions {Vec2 { x: 1, y: 1 }, Vec2 { x: 4, y: 4 }, Vec2 { x: 0, y: 2 }}
+
+trail_item 9
+positions {Vec2 { x: 5, y: 4 }, Vec2 { x: 1, y: 0 }, Vec2 { x: 4, y: 5 }, Vec2 { x: 4, y: 3 }, Vec2 { x: 0, y: 3 }}
+score 5
+Solution: 36
 

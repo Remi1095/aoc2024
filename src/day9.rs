@@ -5,8 +5,8 @@ const INPUT_URL: &str = "https://adventofcode.com/2024/day/9/input";
 
 #[derive(Clone, Debug)]
 struct Block {
-    size: usize,
     offset: usize,
+    size: usize,
 }
 
 pub fn part_1() -> SolutionResult {
@@ -15,8 +15,6 @@ pub fn part_1() -> SolutionResult {
 
     let mut used_iter = used_blocks.into_iter().enumerate().rev().peekable();
     let mut free_iter = free_blocks.into_iter().peekable();
-    // let mut used_it = used_iter.next();
-    // let mut free_it = free_iter.next();
 
     let mut checksum = 0;
 
@@ -34,30 +32,15 @@ pub fn part_1() -> SolutionResult {
         let (id, used) = used_iter.peek_mut().unwrap();
         let free = free_iter.peek_mut().unwrap();
 
-        // println!();
-        // println!("id {:?}", id);
-        // println!("used {:?}", used);
-        // println!("free {:?}", free);
-
         let used_size_prev = used.size;
         used.size = used.size.saturating_sub(free.size);
 
         let blocks_moved = used_size_prev - used.size;
-        // println!(
-        //     "blocks_moved {} first {} last {}",
-        //     blocks_moved,
-        //     free.offset,
-        //     free.offset + blocks_moved - 1
-        // );
-        let t = arithmetic_series(blocks_moved, free.offset, free.offset + blocks_moved - 1) * *id;
-        // println!("checksum {:?}", t);
-        checksum += t;
+        checksum +=
+            arithmetic_series(blocks_moved, free.offset, free.offset + blocks_moved - 1) * *id;
 
         free.size -= blocks_moved;
         free.offset += blocks_moved;
-
-        // println!("new used {:?}", used);
-        // println!("new free {:?}", free);
 
         if used.size == 0 {
             used_iter.next();
@@ -67,19 +50,48 @@ pub fn part_1() -> SolutionResult {
         }
     }
     for (id, used) in used_iter {
-        // println!();
-        // println!("id {:?}", id);
-        // println!("used {:?}", used);
-        let t = arithmetic_series(used.size, used.offset, used.offset + used.size - 1) * id;
-        // println!("checksum {:?}", t);
-        checksum += t;
+        checksum += arithmetic_series(used.size, used.offset, used.offset + used.size - 1) * id;
     }
 
     Ok(checksum as i64)
 }
 
 pub fn part_2() -> SolutionResult {
-    Ok(0)
+    let file = get_text_file(INPUT_URL)?;
+    let (used_blocks, mut free_blocks) = read_input(file)?;
+
+    let checksum = used_blocks
+        .into_iter()
+        .enumerate()
+        .rev()
+        .map(|(used_id, used)| {
+            if let Some(free) = free_blocks
+                .iter_mut()
+                .try_for_each(|free| {
+                    if free.offset > used.offset {
+                        Err(None)
+                    } else if used.size <= free.size {
+                        Err(Some(free))
+                    } else {
+                        Ok(())
+                    }
+                })
+                .err()
+                .flatten()
+            {
+                let checksum =
+                    arithmetic_series(used.size, free.offset, free.offset + used.size - 1)
+                        * used_id;
+                free.size -= used.size;
+                free.offset += used.size;
+                checksum
+            } else {
+                arithmetic_series(used.size, used.offset, used.offset + used.size - 1) * used_id
+            }
+        })
+        .sum::<usize>() as i64;
+
+    Ok(checksum)
 }
 
 fn read_input(mut file: File) -> Result<(Vec<Block>, Vec<Block>), Box<dyn Error>> {
@@ -91,12 +103,12 @@ fn read_input(mut file: File) -> Result<(Vec<Block>, Vec<Block>), Box<dyn Error>
         .chars()
         .filter_map(|ch| {
             let offset_clone = offset;
-            if let Some(size) =  ch.to_digit(10) {
+            if let Some(size) = ch.to_digit(10) {
                 let size = size as usize;
                 offset += size;
                 Some(Block {
-                    size,
                     offset: offset_clone,
+                    size,
                 })
             } else {
                 None

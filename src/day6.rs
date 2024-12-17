@@ -1,7 +1,8 @@
 use crate::{get_text_file, math::Vec2, SolutionResult};
 use ndarray::prelude::*;
 use std::{
-    error::Error, fs::File, io::{BufRead, BufReader}
+    fs::File,
+    io::{BufRead, BufReader},
 };
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/6/input";
@@ -44,9 +45,9 @@ impl Guard {
         }
     }
 
-    fn get_position_index(&self) -> Result<(usize, usize), Box<dyn Error>> {
-        Ok((self.position.y.try_into()?, self.position.x.try_into()?))
-    }
+    // fn get_position_index(&self) -> Result<(usize, usize), Box<dyn Error>> {
+    //     Ok((self.position.y.try_into()?, self.position.x.try_into()?))
+    // }
 }
 
 impl Direction {
@@ -73,7 +74,7 @@ impl Direction {
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (mut cells, mut guard) = read_input(file);
-    println!("{:?}", cells);
+    // println!("{:?}", cells);
     let mut visited = 0;
     if !walk_guard(&mut cells, &mut guard, |_| visited += 1) {
         panic!("Guard walking in cycle");
@@ -86,7 +87,7 @@ pub fn part_2() -> SolutionResult {
     let (cells, guard) = read_input(file);
     let mut visited = Vec::new();
     if !walk_guard(&mut cells.clone(), &mut guard.clone(), |guard| {
-        visited.push(guard.get_position_index().unwrap())
+        visited.push(guard.position.convert().unwrap())
     }) {
         panic!("Guard walking in cycle");
     };
@@ -143,7 +144,7 @@ where
     F: FnMut(&Guard) -> (),
 {
     while let Some(cell) = {
-        if let Ok(idx) = guard.get_position_index() {
+        if let Some(idx) = guard.position.convert::<usize>() {
             cells.get_mut(idx)
         } else {
             None
