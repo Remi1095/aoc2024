@@ -1,29 +1,6 @@
-pub mod day1;
-pub mod day10;
-pub mod day11;
-pub mod day12;
-pub mod day13;
-pub mod day14;
-pub mod day15;
-pub mod day16;
-pub mod day17;
-pub mod day18;
-pub mod day19;
-pub mod day2;
-pub mod day20;
-pub mod day21;
-pub mod day22;
-pub mod day23;
-pub mod day24;
-pub mod day25;
-pub mod day3;
-pub mod day4;
-pub mod day5;
-pub mod day6;
-pub mod day7;
-pub mod day8;
-pub mod day9;
-pub mod math;
+mod math;
+mod utils;
+mod y2024;
 
 use reqwest::{blocking, header::COOKIE, Url};
 use std::{
@@ -50,21 +27,24 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
     let mut solution_runners: HashMap<u32, Vec<Runner>> = HashMap::new();
     let f = |fn_ptr: fn() -> SolutionResult| Box::new(fn_ptr) as Runner;
 
-    solution_runners.extend(
-        [
-            (1, vec![f(day1::part_1), f(day1::part_2)]),
-            (2, vec![f(day2::part_1), f(day2::part_2)]),
-            (3, vec![f(day3::part_1), f(day3::part_2)]),
-            (4, vec![f(day4::part_1), f(day4::part_2)]),
-            (5, vec![f(day5::part_1), f(day5::part_2)]),
-            (6, vec![f(day6::part_1), f(day6::part_2)]),
-            (7, vec![f(day7::part_1), f(day7::part_2)]),
-            (8, vec![f(day8::part_1), f(day8::part_2)]),
-            (9, vec![f(day9::part_1), f(day9::part_2)]),
-            (10, vec![f(day10::part_1)]),
-        ]
-        .into_iter(),
-    );
+    {
+        use y2024::*;
+        solution_runners.extend(
+            [
+                (1, vec![f(day1::part_1), f(day1::part_2)]),
+                (2, vec![f(day2::part_1), f(day2::part_2)]),
+                (3, vec![f(day3::part_1), f(day3::part_2)]),
+                (4, vec![f(day4::part_1), f(day4::part_2)]),
+                (5, vec![f(day5::part_1), f(day5::part_2)]),
+                (6, vec![f(day6::part_1), f(day6::part_2)]),
+                (7, vec![f(day7::part_1), f(day7::part_2)]),
+                (8, vec![f(day8::part_1), f(day8::part_2)]),
+                (9, vec![f(day9::part_1), f(day9::part_2)]),
+                (10, vec![f(day10::part_1), f(day10::part_2)]),
+            ]
+            .into_iter(),
+        );
+    }
     solution_runners
 }
 

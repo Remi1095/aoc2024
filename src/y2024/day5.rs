@@ -1,13 +1,11 @@
-use crate::{get_text_file, SolutionResult};
+use crate::{get_text_file, utils::FxDiGraphMap, SolutionResult};
 use itertools::Itertools;
-use petgraph::{algo::toposort, prelude::*, visit::NodeFiltered};
-use rustc_hash::{FxBuildHasher, FxHashSet};
+use petgraph::{algo::toposort, visit::NodeFiltered};
+use rustc_hash::FxHashSet;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
-
-type OrderGraph = GraphMap<i64, (), Directed, FxBuildHasher>;
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/5/input";
 
@@ -59,9 +57,9 @@ pub fn part_2() -> SolutionResult {
     Ok(result)
 }
 
-pub fn read_input(file: File) -> (OrderGraph, Vec<Vec<i64>>) {
+pub fn read_input(file: File) -> (FxDiGraphMap<i64, ()>, Vec<Vec<i64>>) {
     let mut first_section = true;
-    let mut graph = OrderGraph::new();
+    let mut graph = FxDiGraphMap::<i64, ()>::new();
     let mut sequences: Vec<Vec<i64>> = Vec::new();
 
     for line in BufReader::new(file).lines() {
@@ -76,11 +74,7 @@ pub fn read_input(file: File) -> (OrderGraph, Vec<Vec<i64>>) {
                 .unwrap();
             graph.add_edge(v, u, ());
         } else {
-            sequences.push(
-                line.split(',')
-                    .map(|ch| ch.parse().unwrap())
-                    .collect(),
-            );
+            sequences.push(line.split(',').map(|ch| ch.parse().unwrap()).collect());
         }
     }
 

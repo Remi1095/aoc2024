@@ -1,12 +1,11 @@
-use std::{fmt::Debug, ops::{Add, Neg, Sub}};
-
-use ndarray::{Dim, Dimension, Ix2, NdIndex};
-use num::{
-    CheckedAdd, CheckedSub,  NumCast, Signed,
-    ToPrimitive,
+use ndarray::{Ix2, NdIndex};
+use num::{CheckedAdd, CheckedSub, NumCast, Signed, ToPrimitive};
+use std::{
+    fmt::Debug,
+    ops::{Add, Neg, Sub},
 };
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct Vec2<T> {
     pub x: T,
     pub y: T,
@@ -20,9 +19,6 @@ impl<T> Vec2<T> {
     pub fn from_tuple(tup: (T, T)) -> Self {
         Self { x: tup.0, y: tup.1 }
     }
-
-   
-
 }
 
 impl Vec2<usize> {
@@ -135,8 +131,6 @@ where
         }
     }
 }
-
-
 
 unsafe impl NdIndex<Ix2> for Vec2<usize> {
     fn index_checked(&self, dim: &Ix2, strides: &Ix2) -> Option<isize> {
