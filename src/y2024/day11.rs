@@ -50,7 +50,6 @@ struct NodeTree {
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let mut stones = read_input(file)?;
-    // println!("stones {:?}", stones);
     for _ in 0..NUM_BLINKS_1 {
         let stones_len = stones.len();
         for idx in 0..stones_len {
@@ -59,7 +58,6 @@ pub fn part_1() -> SolutionResult {
                 *n = 1;
             } else {
                 let digits = get_digits(*n);
-                // println!("digits {:?}", digits);
                 if digits.len() % 2 == 0 {
                     let mid = digits.len() / 2;
                     *n = digit_to_value(&digits[mid..]);
@@ -69,7 +67,6 @@ pub fn part_1() -> SolutionResult {
                 }
             }
         }
-        // println!("stones {:?}", stones);
     }
     Ok(stones.len() as i64)
 }
