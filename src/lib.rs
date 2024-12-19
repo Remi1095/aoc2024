@@ -31,6 +31,7 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
         use y2024::*;
         solution_runners.extend(
             [
+                // (11, vec![f(day11::part_1)]),
                 (1, vec![f(day1::part_1), f(day1::part_2)]),
                 (2, vec![f(day2::part_1), f(day2::part_2)]),
                 (3, vec![f(day3::part_1), f(day3::part_2)]),
@@ -41,6 +42,7 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
                 (8, vec![f(day8::part_1), f(day8::part_2)]),
                 (9, vec![f(day9::part_1), f(day9::part_2)]),
                 (10, vec![f(day10::part_1), f(day10::part_2)]),
+                (11, vec![f(day11::part_1), f(day11::part_2)]),
             ]
             .into_iter(),
         );

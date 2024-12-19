@@ -1,12 +1,10 @@
 use crate::{get_text_file, math::Vec2, SolutionResult};
 use itertools::Itertools;
 use ndarray::Array2;
-use petgraph::prelude::*;
 use rustc_hash::{FxHashMap, FxHashSet};
 use std::{
     fs::File,
     io::{BufRead, BufReader},
-    iter,
 };
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/10/input";
@@ -19,19 +17,13 @@ pub fn part_1() -> SolutionResult {
 
     let (topographic_map, trailheads) = read_input(file);
     let trail_seqence: FxHashMap<_, _> = (TRAILHEAD..=TRAILTAIL).tuple_windows().collect();
-    // println!("trail_seqence {:?}", trail_seqence);
 
     let score = trailheads
         .into_iter()
         .map(|trailhead| {
-            // println!();
-            // println!("trailhead {:?}", trailhead);
             let mut trail_item = TRAILHEAD;
             let mut positions = FxHashSet::default();
             positions.insert(trailhead);
-            // println!();
-            // println!("trail_item {:?}", trail_item);
-            // println!("positions {:?}", positions);
             while !positions.is_empty() {
                 positions = FxHashSet::from_iter(positions.into_iter().flat_map(|position| {
                     iter_neighbors(position).filter(|neighbor| {
@@ -44,15 +36,10 @@ pub fn part_1() -> SolutionResult {
                 }));
 
                 trail_item = trail_seqence[&trail_item];
-                // println!();
-                // println!("trail_item {:?}", trail_item);
-                // println!("positions {:?}", positions);
                 if trail_item == TRAILTAIL {
-                    // println!("score {}", positions.len());
                     return positions.len();
                 }
             }
-            // println!("score 0");
             0
         })
         .sum::<usize>() as i64;
@@ -77,10 +64,6 @@ pub fn part_2() -> SolutionResult {
             let mut position_paths = FxHashMap::default();
             position_paths.insert(trailhead, 1);
 
-            // println!();
-            // println!("trail_item {:?}", trail_item);
-            // println!("positions {:?}", positions);
-            // println!("position_paths {:?}", position_paths);
             while !positions.is_empty() {
                 positions = FxHashSet::from_iter(positions.into_iter().flat_map(|node| {
                     iter_neighbors(node)
@@ -101,16 +84,10 @@ pub fn part_2() -> SolutionResult {
                 }));
 
                 trail_item = trail_seqence[&trail_item];
-                // println!();
-                // println!("trail_item {:?}", trail_item);
-                // println!("positions {:?}", positions);
-                // println!("position_paths {:?}", position_paths);
                 if trail_item == TRAILTAIL {
-                    // println!("rating {:?}", positions.iter().map(|node| position_paths[node]).sum::<usize>());
                     return positions.iter().map(|node| position_paths[node]).sum();
                 }
             }
-            // println!("rating 0");
             0
         })
         .sum::<usize>() as i64;
