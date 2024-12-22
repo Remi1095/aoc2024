@@ -1,8 +1,8 @@
 use ndarray::{Ix2, NdIndex};
-use num::{CheckedAdd, CheckedSub, NumCast, Signed, ToPrimitive};
+use num::{traits::{SaturatingAdd, SaturatingSub}, CheckedAdd, CheckedSub, NumCast, Signed, ToPrimitive};
 use std::{
     fmt::Debug,
-    ops::{Add, Neg, Sub},
+    ops::{Add, Mul, Neg, Sub},
 };
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
@@ -129,6 +129,31 @@ where
     }
 }
 
+
+impl<T> SaturatingAdd for Vec2<T>
+where
+    T: SaturatingAdd,
+{
+    fn saturating_add(&self, v: &Self) -> Self {
+        Self {
+            x: self.x.saturating_add(&v.x),
+            y: self.y.saturating_add(&v.y),
+        }
+    }
+}
+
+impl<T> SaturatingSub for Vec2<T>
+where
+    T: SaturatingSub,
+{
+    fn saturating_sub(&self, v: &Self) -> Self {
+        Self {
+            x: self.x.saturating_sub(&v.x),
+            y: self.y.saturating_sub(&v.y),
+        }
+    }
+}
+
 impl<T> Neg for Vec2<T>
 where
     T: Neg<Output = T>,
@@ -139,6 +164,20 @@ where
         Self {
             x: -self.x,
             y: -self.y,
+        }
+    }
+}
+
+impl<T> Mul<T> for Vec2<T>
+where
+    T: Mul<Output = T> + Clone,
+{
+    type Output = Self;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Self {
+            x: self.x * rhs.clone(),
+            y: self.y * rhs,
         }
     }
 }
