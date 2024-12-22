@@ -1,14 +1,9 @@
+use crate::{get_text_file, math::Vec2, SolutionResult};
+use ndarray::Array2;
 use std::{
-    collections::BTreeSet,
     fs::File,
     io::{BufRead, BufReader},
 };
-
-use itertools::Itertools;
-use ndarray::Array2;
-use rustc_hash::{FxHashMap, FxHashSet};
-
-use crate::{get_text_file, math::Vec2, SolutionResult};
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/12/input";
 
