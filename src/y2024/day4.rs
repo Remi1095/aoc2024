@@ -30,12 +30,9 @@ pub fn part_1() -> SolutionResult {
             .chars()
             .zip(rotation.iter())
             .all(|(ch_desired, pos)| {
-                if let Some(shift_idx) = add_indices(idx, *pos) {
-                    if let Some(ch_actual) = matrix.get(shift_idx) {
-                        return *ch_actual == ch_desired;
-                    }
-                }
-                false
+                idx.signed_add(*pos)
+                    .and_then(|shift_idx| matrix.get(shift_idx))
+                    .map_or(false, |ch_actual| *ch_actual == ch_desired)
             })
     };
 
@@ -63,16 +60,16 @@ pub fn part_2() -> SolutionResult {
             (corner, -corner)
         })
         .collect_vec();
-    let word_found = |idx, (pos_1, pos_2): (_, _)| {
-        if let (Some(idx_1), Some(idx_2)) = (add_indices(idx, pos_1), add_indices(idx, pos_2)) {
-            if let (Some(ch_1), Some(ch_2)) = (matrix.get(idx_1), matrix.get(idx_2)) {
-                return matches!(
+    let word_found = |idx: Vec2<usize>, (pos_1, pos_2): (_, _)| {
+        idx.signed_add(pos_1)
+            .zip(idx.signed_add(pos_2))
+            .and_then(|(idx_1, idx_2)| matrix.get(idx_1).zip(matrix.get(idx_2)))
+            .map_or(false, |(ch_1, ch_2)| {
+                matches!(
                     (*ch_1, *ch_2),
                     (FIRST_CHAR, LAST_CHAR) | (LAST_CHAR, FIRST_CHAR)
-                );
-            }
-        }
-        false
+                )
+            })
     };
 
     let occurences = matrix
@@ -110,8 +107,4 @@ fn rotate_45(Vec2 { x, y }: Vec2<isize>) -> Vec2<isize> {
 
 fn rotate_90(Vec2 { x, y }: Vec2<isize>) -> Vec2<isize> {
     Vec2 { x: -y, y: x }
-}
-
-fn add_indices(idx: Vec2<usize>, pos: Vec2<isize>) -> Option<Vec2<usize>> {
-    (idx.convert::<isize>().unwrap() + pos).convert::<usize>()
 }

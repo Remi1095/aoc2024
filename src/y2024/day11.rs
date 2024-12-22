@@ -87,14 +87,9 @@ pub fn part_2() -> SolutionResult {
             sub_stones = sub_stones
                 .into_iter()
                 .filter(|node| {
-                    if let Some(num) =
-                        get_node_num_stones(&node_trees, &node_depth_table, *node, num_blinks)
-                    {
-                        num_stones += num;
-                        false
-                    } else {
-                        true
-                    }
+                    get_node_num_stones(&node_trees, &node_depth_table, *node, num_blinks)
+                        .inspect(|num| num_stones += num)
+                        .is_none()
                 })
                 .flat_map(|node| blink(node))
                 .collect();
@@ -124,7 +119,8 @@ fn compute_node_trees(nodes: &[i64]) -> FxHashMap<i64, NodeTree> {
     nodes
         .iter()
         .map(|root| {
-            let mut stones = vec![(**root, false)];
+            let root = **root;
+            let mut stones = vec![(root, false)];
             let mut blink_counts = vec![1];
             let mut leaves = ComposedNodes(Default::default());
             while !stones.is_empty() {
@@ -147,7 +143,7 @@ fn compute_node_trees(nodes: &[i64]) -> FxHashMap<i64, NodeTree> {
                 blink_counts.push(stones.len());
             }
             (
-                **root,
+                root,
                 NodeTree {
                     blink_counts,
                     leaves,

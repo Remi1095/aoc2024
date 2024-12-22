@@ -18,16 +18,9 @@ pub fn part_1() -> SolutionResult {
 
     let mut checksum = 0;
 
-    while {
-        used_iter
-            .peek()
-            .map(|(_, used)| {
-                free_iter
-                    .peek()
-                    .map(|free| used.offset > free.offset)
-                    .unwrap_or(false)
-            })
-            .unwrap_or(false)
+    while match (used_iter.peek(), free_iter.peek()) {
+        (Some((_, used)), Some(free)) => used.offset > free.offset,
+        _ => false,
     } {
         let (id, used) = used_iter.peek_mut().unwrap();
         let free = free_iter.peek_mut().unwrap();
@@ -65,7 +58,7 @@ pub fn part_2() -> SolutionResult {
         .enumerate()
         .rev()
         .map(|(used_id, used)| {
-            if let Some(free) = free_blocks
+            free_blocks
                 .iter_mut()
                 .try_for_each(|free| {
                     if free.offset > used.offset {
@@ -78,16 +71,18 @@ pub fn part_2() -> SolutionResult {
                 })
                 .err()
                 .flatten()
-            {
-                let checksum =
-                    arithmetic_series(used.size, free.offset, free.offset + used.size - 1)
-                        * used_id;
-                free.size -= used.size;
-                free.offset += used.size;
-                checksum
-            } else {
-                arithmetic_series(used.size, used.offset, used.offset + used.size - 1) * used_id
-            }
+                .map(|free| {
+                    let checksum =
+                        arithmetic_series(used.size, free.offset, free.offset + used.size - 1)
+                            * used_id;
+                    free.size -= used.size;
+                    free.offset += used.size;
+                    checksum
+                })
+                .unwrap_or(
+                    arithmetic_series(used.size, used.offset, used.offset + used.size - 1)
+                        * used_id,
+                )
         })
         .sum::<usize>() as i64;
 

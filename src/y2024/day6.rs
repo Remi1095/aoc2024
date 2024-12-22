@@ -44,10 +44,6 @@ impl Guard {
             Direction::Left => self.position.x -= step,
         }
     }
-
-    // fn get_position_index(&self) -> Result<(usize, usize), Box<dyn Error>> {
-    //     Ok((self.position.y.try_into()?, self.position.x.try_into()?))
-    // }
 }
 
 impl Direction {
@@ -143,13 +139,12 @@ fn walk_guard<F>(cells: &mut Array2<Cell>, guard: &mut Guard, mut predicate: F) 
 where
     F: FnMut(&Guard) -> (),
 {
-    while let Some(cell) = {
-        if let Some(idx) = guard.position.convert::<usize>() {
-            cells.get_mut(idx)
-        } else {
-            None
-        }
-    } {
+    while let Some(cell) = guard
+        .position
+        .convert::<usize>()
+        .map(|idx| cells.get_mut(idx))
+        .flatten()
+    {
         match cell {
             Cell::Obstacle => {
                 guard.move_forward(-1);

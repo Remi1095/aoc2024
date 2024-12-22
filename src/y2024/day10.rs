@@ -104,14 +104,12 @@ fn read_input(file: File) -> (Array2<i32>, Vec<Vec2<usize>>) {
         .enumerate()
         .map(|(row, line)| {
             positions.extend(line.unwrap().chars().enumerate().filter_map(|(col, ch)| {
-                if let Some(val) = ch.to_digit(10) {
+                ch.to_digit(10).map(|val| {
                     if val == TRAILHEAD as u32 {
                         trailtails.push(Vec2 { x: col, y: row });
                     }
-                    Some(val as i32)
-                } else {
-                    None
-                }
+                    val as i32
+                })
             }));
         })
         .count();

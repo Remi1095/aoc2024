@@ -57,7 +57,6 @@ fn iter_input(file: File) -> impl Iterator<Item = Vec<i32>> {
 fn is_safe_with_tolerance(levels: &Vec<i32>) -> bool {
     let is_good = |diff| (MIN_LEVEL_DIFF..=MAX_LEVEL_DIFF).contains(&diff);
 
-    // println!("levels {:?}", levels);
     if levels.len() < 2 {
         return true;
     }

@@ -44,11 +44,7 @@ pub fn part_2() -> SolutionResult {
     let similarity = id_map_1
         .iter()
         .filter_map(|(id, occ_1)| {
-            if let Some(occ_2) = id_map_2.get(id) {
-                Some(*id * *occ_1 as i64 * *occ_2 as i64)
-            } else {
-                None
-            }
+            id_map_2.get(id).map(|occ_2| *id * *occ_1 as i64 * *occ_2 as i64)
         })
         .sum();
 

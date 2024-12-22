@@ -53,6 +53,17 @@ where
         })
     }
 }
+impl<T> Vec2<T>
+where
+    T: NumCast + Clone,
+{
+    pub fn signed_add<U>(&self, other: Vec2<U>) -> Option<Self>
+    where
+        U: NumCast + Signed + Add,
+    {
+        (self.clone().convert::<U>()? + other).convert::<T>()
+    }
+}
 
 impl<T> Vec2<T>
 where
