@@ -41,8 +41,6 @@ fn main() -> Result<(), AnyError> {
 
     let selected_runners = match cli.command {
         Command::Run { day, mut part } => {
-
-
             let day_or_max = day.unwrap_or(
                 *solution_runners
                     .keys()
@@ -53,7 +51,7 @@ fn main() -> Result<(), AnyError> {
                 .get(&day_or_max)
                 .ok_or(format!("Day {day_or_max:?} not implemented"))?;
 
-            if day == None && part == None{
+            if day == None && part == None {
                 part = Some(runners.len() as u32);
             }
 
