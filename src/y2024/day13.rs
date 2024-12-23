@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use num::{cast::AsPrimitive, rational::Ratio, CheckedSub};
+use num::rational::Ratio;
 use regex::Regex;
 use std::{
     cmp::Ordering,
