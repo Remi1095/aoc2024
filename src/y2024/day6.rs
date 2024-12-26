@@ -22,6 +22,28 @@ enum Direction {
     Left,
 }
 
+impl Direction {
+    fn new(symbol: char) -> Option<Self> {
+        Some(match symbol {
+            GUARD_UP => Self::Up,
+            GUARD_RIGHT => Self::Right,
+            GUARD_DOWN => Self::Down,
+            GUARD_LEFT => Self::Left,
+            _ => None?,
+        })
+    }
+
+    fn rotate(&self) -> Self {
+        match self {
+            Self::Up => Self::Right,
+            Self::Right => Self::Down,
+            Self::Down => Self::Left,
+            Self::Left => Self::Up,
+        }
+    }
+}
+
+
 #[derive(Clone, PartialEq, Eq, Debug)]
 enum Cell {
     Obstacle,
@@ -46,26 +68,6 @@ impl Guard {
     }
 }
 
-impl Direction {
-    fn new(symbol: char) -> Option<Self> {
-        Some(match symbol {
-            GUARD_UP => Self::Up,
-            GUARD_RIGHT => Self::Right,
-            GUARD_DOWN => Self::Down,
-            GUARD_LEFT => Self::Left,
-            _ => None?,
-        })
-    }
-
-    fn rotate(&self) -> Self {
-        match self {
-            Self::Up => Self::Right,
-            Self::Right => Self::Down,
-            Self::Down => Self::Left,
-            Self::Left => Self::Up,
-        }
-    }
-}
 
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
