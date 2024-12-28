@@ -47,7 +47,7 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
                 (12, vec![f(day12::part_1), f(day12::part_2)]),
                 (13, vec![f(day13::part_1), f(day13::part_2)]),
                 (14, vec![f(day14::part_1), f(day14::part_2)]),
-                (15, vec![f(day15::part_1)]),
+                (15, vec![f(day15::part_1), f(day15::part_2)]),
             ]
             .into_iter(),
         );

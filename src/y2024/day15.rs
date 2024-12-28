@@ -1,11 +1,9 @@
+use crate::{get_text_file, math::Vec2, SolutionResult};
+use ndarray::Array2;
 use std::{
     fs::File,
     io::{BufRead, BufReader},
 };
-
-use crate::{get_text_file, math::Vec2, SolutionResult};
-use itertools::{Either, Itertools};
-use ndarray::{Array2, Axis};
 
 const INPUT_URL: &str = "https://adventofcode.com/2024/day/15/input";
 
@@ -66,6 +64,55 @@ impl Cell {
     }
 }
 
+#[derive(Clone, PartialEq, Eq, Debug)]
+enum BoxCell {
+    Left,
+    Right,
+}
+impl BoxCell {
+    fn indices(&self, index: Vec2<usize>) -> (Vec2<usize>, Vec2<usize>) {
+        match self {
+            BoxCell::Left => (
+                index,
+                Vec2 {
+                    x: index.x + 1,
+                    ..index
+                },
+            ),
+            BoxCell::Right => (
+                Vec2 {
+                    x: index.x - 1,
+                    ..index
+                },
+                index,
+            ),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+enum WideCell {
+    Empty,
+    Wall,
+    Box(BoxCell),
+}
+impl WideCell {
+    fn from_cell(cell: Cell) -> [Self; 2] {
+        match cell {
+            Cell::Empty => [Self::Empty, Self::Empty],
+            Cell::Wall => [Self::Wall, Self::Wall],
+            Cell::Box => [Self::Box(BoxCell::Left), Self::Box(BoxCell::Right)],
+        }
+    }
+
+    fn unwrap_box(self) -> BoxCell {
+        match self {
+            Self::Box(b) => b,
+            _ => panic!(),
+        }
+    }
+}
+
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (mut cells, directions, mut robot_pos) = read_input(file);
@@ -122,8 +169,62 @@ pub fn part_1() -> SolutionResult {
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
+    let (cells, directions, robot_pos) = read_input(file);
+    let (rows, cols) = cells.dim();
+    let mut cells = Array2::from_shape_vec(
+        (rows, cols * 2),
+        cells
+            .as_standard_layout()
+            .into_iter()
+            .flat_map(|cell| WideCell::from_cell(cell))
+            .collect(),
+    )
+    .unwrap();
+    let mut robot_pos = Vec2 {
+        x: robot_pos.x * 2,
+        ..robot_pos
+    };
 
-    Ok(0)
+    // println!("Initial state");
+    // display_wide_cells(&cells, &robot_pos);
+    for direction in directions {
+        // println!(
+        //     "\nMove {:?}",
+        //     match direction {
+        //         Direction::Up => UP,
+        //         Direction::Right => RIGHT,
+        //         Direction::Down => DOWN,
+        //         Direction::Left => LEFT,
+        //     }.to_string()
+        // );
+        let unit_direction = direction.unit_vec();
+        if let Some(move_index) = robot_pos.signed_add(unit_direction) {
+            if match cells.get(move_index) {
+                Some(WideCell::Empty) => true,
+                Some(WideCell::Wall) | None => false,
+                Some(WideCell::Box(_)) => match direction {
+                    Direction::Up | Direction::Down => {
+                        move_boxes_vertical(&mut cells, move_index, unit_direction)
+                    }
+                    Direction::Right | Direction::Left => {
+                        move_boxes_horizontal(&mut cells, move_index, unit_direction)
+                    }
+                },
+            } {
+                robot_pos = move_index;
+            }
+        }
+        // display_wide_cells(&cells, &robot_pos);
+    }
+    let gps = cells
+        .indexed_iter()
+        .filter_map(|((y, x), cell)| match cell {
+            WideCell::Box(BoxCell::Left) => Some(GPS_FACTOR * y + x),
+            _ => None,
+        })
+        .sum::<usize>() as i64;
+
+    Ok(gps)
 }
 
 fn read_input(file: File) -> (Array2<Cell>, Vec<Direction>, Vec2<usize>) {
@@ -160,22 +261,116 @@ fn read_input(file: File) -> (Array2<Cell>, Vec<Direction>, Vec2<usize>) {
     )
 }
 
-fn display_cells(cells: &Array2<Cell>, robot_pos: &Vec2<usize>) {
-    for (y, row) in cells.axis_iter(Axis(0)).enumerate() {
-        for (x, cell) in row.iter().enumerate() {
-            print!(
-                "{}",
-                if *robot_pos == (Vec2 { x, y }) {
-                    ROBOT
-                } else {
-                    match cell {
-                        Cell::Empty => EMPTY,
-                        Cell::Wall => WALL,
-                        Cell::Box => BOX,
-                    }
-                }
-            )
+fn move_boxes_horizontal(
+    cells: &mut Array2<WideCell>,
+    move_index: Vec2<usize>,
+    unit_direction: Vec2<isize>,
+) -> bool {
+    let mut box_indicies = vec![move_index];
+    let mut index = 0;
+    while let Some(box_idx) = box_indicies.get(index) {
+        let next_box_idx_opt = box_idx.signed_add(unit_direction);
+        match next_box_idx_opt.and_then(|i| cells.get(i)) {
+            Some(WideCell::Empty) => break,
+            Some(WideCell::Wall) | None => return false,
+            Some(WideCell::Box(_)) => box_indicies.push(next_box_idx_opt.unwrap()),
         }
-        println!();
+        index += 1;
     }
+    for box_idx in box_indicies.iter().rev() {
+        cells[box_idx.signed_add(unit_direction).unwrap()] = cells[*box_idx].clone();
+    }
+    cells[*box_indicies.first().unwrap()] = WideCell::Empty;
+    true
 }
+
+fn move_boxes_vertical(
+    cells: &mut Array2<WideCell>,
+    move_index: Vec2<usize>,
+    unit_direction: Vec2<isize>,
+) -> bool {
+    let move_box_cell = cells[move_index].clone().unwrap_box();
+    let mut boxes = vec![move_box_cell.indices(move_index)];
+    let mut next_box_idx = 0;
+
+    let push_box = |box_side_idx: Vec2<usize>| {
+        if let Some(next_index) = box_side_idx.signed_add(unit_direction) {
+            match cells.get(next_index) {
+                Some(WideCell::Wall) | None => None,
+                Some(WideCell::Empty) => Some(None),
+                Some(WideCell::Box(box_cell)) => Some(Some(box_cell.indices(next_index))),
+            }
+        } else {
+            None
+        }
+    };
+
+    while let Some((left_side, right_side)) = boxes.get(next_box_idx) {
+        if let (Some(next_left_box_opt), Some(next_right_box_opt)) =
+            (push_box(*left_side), push_box(*right_side))
+        {
+            if let Some(next_left_box) = next_left_box_opt {
+                boxes.push(next_left_box);
+            }
+            if let Some(next_right_box) = next_right_box_opt {
+                if boxes.last().map_or(true, |b| *b != next_right_box) {
+                    boxes.push(next_right_box);
+                }
+            }
+        } else {
+            return false;
+        }
+        next_box_idx += 1;
+    }
+
+    for (left_side, right_side) in boxes.iter().rev() {
+        cells[*left_side] = WideCell::Empty;
+        cells[*right_side] = WideCell::Empty;
+        cells[left_side.signed_add(unit_direction).unwrap()] = WideCell::Box(BoxCell::Left);
+        cells[right_side.signed_add(unit_direction).unwrap()] = WideCell::Box(BoxCell::Right);
+    }
+    true
+}
+
+// fn display_cells(cells: &Array2<Cell>, robot_pos: &Vec2<usize>) {
+//     for (y, row) in cells.axis_iter(Axis(0)).enumerate() {
+//         for (x, cell) in row.iter().enumerate() {
+//             print!(
+//                 "{}",
+//                 if *robot_pos == (Vec2 { x, y }) {
+//                     ROBOT
+//                 } else {
+//                     match cell {
+//                         Cell::Empty => EMPTY,
+//                         Cell::Wall => WALL,
+//                         Cell::Box => BOX,
+//                     }
+//                 }
+//                 .to_string()
+//             )
+//         }
+//         println!();
+//     }
+// }
+
+// fn display_wide_cells(cells: &Array2<WideCell>, robot_pos: &Vec2<usize>) {
+//     for (y, row) in cells.axis_iter(Axis(0)).enumerate() {
+//         for (x, cell) in row.iter().enumerate() {
+//             print!(
+//                 "{}",
+//                 if *robot_pos == (Vec2 { x, y }) {
+//                     ROBOT
+//                 } else {
+//                     match cell {
+//                         WideCell::Empty => EMPTY,
+//                         WideCell::Wall => WALL,
+//                         WideCell::Box(BoxCell::Left) => '[',
+//                         WideCell::Box(BoxCell::Right) => ']',
+//                     }
+//                 }
+//                 .to_string()
+//             )
+//         }
+//         println!();
+//     }
+// }
