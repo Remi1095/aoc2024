@@ -1,5 +1,5 @@
 use crate::{get_text_file, math::Vec2, SolutionResult};
-use ndarray::Array2;
+use ndarray::prelude::*;
 use std::{
     fs::File,
     io::{BufRead, BufReader},

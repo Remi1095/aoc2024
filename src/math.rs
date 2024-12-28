@@ -77,6 +77,18 @@ where
     }
 }
 
+impl<T> Vec2<T>
+where
+    T: Neg<Output = T> + Clone,
+{
+    pub fn rotate_90(&self) -> Self {
+        Self {
+            x: self.y.clone().neg(),
+            y: self.x.clone(),
+        }
+    }
+}
+
 impl<T> Add for Vec2<T>
 where
     T: Add<Output = T>,
