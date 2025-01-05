@@ -21,13 +21,13 @@ pub fn part_1() -> SolutionResult {
     ids_1.sort_unstable();
     ids_2.sort_unstable();
 
-    let distance = ids_1
+    let distance: i64 = ids_1
         .iter()
         .zip(ids_2.iter())
         .map(|(id_1, id_2)| (id_1 - id_2).abs())
         .sum();
 
-    Ok(distance)
+    Ok(distance.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -41,14 +41,14 @@ pub fn part_2() -> SolutionResult {
         insert_id_fxhashmap(&mut id_map_2, id_2);
     }
 
-    let similarity = id_map_1
+    let similarity: i64 = id_map_1
         .iter()
         .filter_map(|(id, occ_1)| {
             id_map_2.get(id).map(|occ_2| *id * *occ_1 as i64 * *occ_2 as i64)
         })
         .sum();
 
-    Ok(similarity)
+    Ok(similarity.to_string())
 }
 
 fn iter_input(file: File) -> impl Iterator<Item = (i64, i64)> {

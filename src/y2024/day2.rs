@@ -34,7 +34,7 @@ pub fn part_1() -> SolutionResult {
         })
         .count() as i64;
 
-    Ok(safe_reports)
+    Ok(safe_reports.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -42,7 +42,7 @@ pub fn part_2() -> SolutionResult {
 
     let safe_reports = iter_input(file).filter(is_safe_with_tolerance).count() as i64;
 
-    Ok(safe_reports)
+    Ok(safe_reports.to_string())
 }
 
 fn iter_input(file: File) -> impl Iterator<Item = Vec<i32>> {

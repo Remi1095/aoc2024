@@ -60,12 +60,12 @@ pub fn part_1() -> SolutionResult {
         regions.push(region);
     }
 
-    let cost = regions
+    let cost: u32 = regions
         .into_iter()
         .map(|region| region.area * region.perimeter)
-        .sum::<u32>() as i64;
+        .sum();
 
-    Ok(cost)
+    Ok(cost.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -154,12 +154,12 @@ pub fn part_2() -> SolutionResult {
         regions.push(region);
     }
 
-    let cost = regions
+    let cost: u32 = regions
         .into_iter()
         .map(|region| region.area * region.sides)
-        .sum::<u32>() as i64;
+        .sum();
 
-    Ok(cost)
+    Ok(cost.to_string())
 }
 
 fn read_input(file: File) -> Array2<char> {

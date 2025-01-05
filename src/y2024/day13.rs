@@ -26,7 +26,7 @@ const PRIZE_OFFSET: i64 = 10000000000000;
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
 
-    let tokens = iter_input(file)
+    let tokens: i64 = iter_input(file)
         .filter_map(
             |ClawMachine {
                  button_a: a,
@@ -65,15 +65,15 @@ pub fn part_1() -> SolutionResult {
                 None
             },
         )
-        .sum::<i64>() as i64;
+        .sum();
 
-    Ok(tokens)
+    Ok(tokens.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
 
-    let tokens = iter_input(file)
+    let tokens: i64 = iter_input(file)
         .filter_map(
             |ClawMachine {
                  button_a: a,
@@ -173,9 +173,9 @@ pub fn part_2() -> SolutionResult {
                 }
             },
         )
-        .sum::<i64>() as i64;
+        .sum();
 
-    Ok(tokens)
+    Ok(tokens.to_string())
 }
 
 fn iter_input(file: File) -> impl Iterator<Item = ClawMachine> {

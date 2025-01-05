@@ -13,7 +13,7 @@ pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (graph, sequences) = read_input(file);
 
-    let result = sequences
+    let result: i64 = sequences
         .into_iter()
         .filter_map(|values| {
             let value_set: FxHashSet<i64> = values.clone().into_iter().collect();
@@ -30,14 +30,14 @@ pub fn part_1() -> SolutionResult {
         })
         .sum();
 
-    Ok(result)
+    Ok(result.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (graph, sequences) = read_input(file);
 
-    let result = sequences
+    let result: i64 = sequences
         .into_iter()
         .filter_map(|values| {
             let value_set: FxHashSet<i64> = values.clone().into_iter().collect();
@@ -54,7 +54,7 @@ pub fn part_2() -> SolutionResult {
         })
         .sum();
 
-    Ok(result)
+    Ok(result.to_string())
 }
 
 pub fn read_input(file: File) -> (FxDiGraphMap<i64, ()>, Vec<Vec<i64>>) {

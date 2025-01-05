@@ -36,7 +36,7 @@ pub fn part_1() -> SolutionResult {
             })
     };
 
-    let occurences = matrix
+    let occurences: i64 = matrix
         .indexed_iter()
         .filter(|(_, ch)| **ch == SOURCE_CHAR)
         .map(|(idx, _)| {
@@ -47,7 +47,7 @@ pub fn part_1() -> SolutionResult {
         })
         .sum();
 
-    Ok(occurences)
+    Ok(occurences.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -80,9 +80,9 @@ pub fn part_2() -> SolutionResult {
                     .iter()
                     .all(|pos_pair| word_found(Vec2::from_index_tuple(*idx), *pos_pair))
         })
-        .count() as i64;
+        .count();
 
-    Ok(occurences)
+    Ok(occurences.to_string())
 }
 
 fn read_input(file: File) -> Array2<char> {

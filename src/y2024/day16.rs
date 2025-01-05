@@ -91,9 +91,9 @@ pub fn part_1() -> SolutionResult {
         |_| 0,
     )
     .unwrap()
-    .0 as i64;
+    .0;
 
-    Ok(score)
+    Ok(score.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -137,11 +137,11 @@ pub fn part_2() -> SolutionResult {
     }
     let tiles = path
         .values()
-        .map(|sources| sources.values().sum::<u64>() as i64 - sources.len() as i64 + 1)
-        .sum::<i64>()
+        .map(|sources| sources.values().sum::<u64>() - sources.len() as u64 + 1)
+        .sum::<u64>()
         + 1;
 
-    Ok(tiles)
+    Ok(tiles.to_string())
 }
 
 fn read_input(file: File) -> (Array2<Cell>, Vec2<usize>, Vec2<usize>) {

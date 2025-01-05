@@ -77,7 +77,7 @@ pub fn part_1() -> SolutionResult {
     if !walk_guard(&mut cells, &mut guard, |_| visited += 1) {
         panic!("Guard walking in cycle");
     }
-    Ok(visited)
+    Ok(visited.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -98,7 +98,7 @@ pub fn part_2() -> SolutionResult {
         })
         .count() as i64;
 
-    Ok(loops)
+    Ok(loops.to_string())
 }
 
 fn read_input(file: File) -> (Array2<Cell>, Guard) {

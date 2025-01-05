@@ -1,0 +1,101 @@
+
+A: 51571418
+B: 0
+C: 0
+
+Program:
+2,4, bst
+1,1, bxl
+7,5, cdv
+0,3, adv
+1,4, bxl
+4,5, bxc
+5,5, out
+3,0 jnz
+
+
+A = ?
+B = 0
+C = 0
+
+bst
+operand = 4
+combo = A
+B = combo & 0b111
+
+bxl
+operand = 1
+combo = 1
+B = B ^ operand
+
+cdv
+operand = 5
+combo = B
+C = A >> combo
+
+adv
+operand = 3
+combo = 3
+A = A >> combo
+
+bxl
+operand = 4
+combo = A
+B = B ^ operand
+
+bxc
+operand = 5
+combo = B
+B = B ^ C
+
+out
+operand = 5
+combo = B
+output: combo & 0b111
+
+jnz
+operand = 0
+combo = 0
+if A != 0:
+    pointer = operand
+
+------------------------------------
+
+A = ?
+B = 0
+C = 0
+
+
+bst
+B = A & 0b111
+> B = A & 0b111
+
+bxl
+B = B ^ 1
+> B = A & 0b111 ^ 1
+
+cdv
+C = A >> B
+> C = A >> (A & 0b111 ^ 1)
+
+adv
+A = A >> 3
+> A = A >> 3
+
+bxl
+B = B ^ 4
+> B = A & 0b111 ^ 1 ^ 4
+
+bxc
+B = B ^ C
+> B = A & 0b111 ^ 1 ^ 4 ^ (A >> (A & 0b111 ^ 1))
+
+out
+output: B & 0b111
+output = A & 0b111 ^ 1 ^ 4 ^ (A >> (A & 0b111 ^ 1)) & 0b111
+= A & 0b111 ^ 5 ^ (A >> (A & 0b111 ^ 1)) & 0b111
+output must be 2
+
+jnz
+if A != 0:
+    pointer = 0

@@ -24,7 +24,7 @@ pub fn part_1() -> SolutionResult {
             insert_antinode_pair(antenna_1, antenna_2, bounds, &mut antinodes);
         }
     }
-    Ok(antinodes.len() as i64)
+    Ok(antinodes.len().to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -40,7 +40,7 @@ pub fn part_2() -> SolutionResult {
             insert_antinodes(antenna_1, antenna_2, bounds, &mut antinodes);
         }
     }
-    Ok(antinodes.len() as i64)
+    Ok(antinodes.len().to_string())
 }
 
 fn read_input(file: File) -> (Vec<Vec<Vec2<isize>>>, (Vec2<isize>, Vec2<isize>)) {

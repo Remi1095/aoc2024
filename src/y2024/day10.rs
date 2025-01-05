@@ -18,7 +18,7 @@ pub fn part_1() -> SolutionResult {
     let (topographic_map, trailheads) = read_input(file);
     let trail_seqence: FxHashMap<_, _> = (TRAILHEAD..=TRAILTAIL).tuple_windows().collect();
 
-    let score = trailheads
+    let score: usize = trailheads
         .into_iter()
         .map(|trailhead| {
             let mut trail_item = TRAILHEAD;
@@ -42,9 +42,9 @@ pub fn part_1() -> SolutionResult {
             }
             0
         })
-        .sum::<usize>() as i64;
+        .sum();
 
-    Ok(score)
+    Ok(score.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -53,7 +53,7 @@ pub fn part_2() -> SolutionResult {
     let (topographic_map, trailheads) = read_input(file);
     let trail_seqence: FxHashMap<_, _> = (TRAILHEAD..=TRAILTAIL).tuple_windows().collect();
 
-    let rating = trailheads
+    let rating: usize = trailheads
         .into_iter()
         .map(|trailhead| {
             let mut trail_item = TRAILHEAD;
@@ -90,9 +90,9 @@ pub fn part_2() -> SolutionResult {
             }
             0
         })
-        .sum::<usize>() as i64;
+        .sum();
 
-    Ok(rating)
+    Ok(rating.to_string())
 }
 
 fn read_input(file: File) -> (Array2<i32>, Vec<Vec2<usize>>) {

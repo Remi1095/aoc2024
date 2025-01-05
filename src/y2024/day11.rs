@@ -68,7 +68,7 @@ pub fn part_1() -> SolutionResult {
             }
         }
     }
-    Ok(stones.len() as i64)
+    Ok(stones.len().to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -102,7 +102,7 @@ pub fn part_2() -> SolutionResult {
         }
     }
 
-    Ok(num_stones as i64)
+    Ok(num_stones.to_string())
 }
 
 fn read_input(mut file: File) -> Result<Vec<i64>, Box<dyn Error>> {

@@ -10,7 +10,7 @@ const INPUT_URL: &str = "https://adventofcode.com/2024/day/7/input";
 pub fn part_1() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
 
-    let result = iter_input(file)
+    let result: i64 = iter_input(file)
         .filter_map(|(value, operands)| {
             let operators = [|lhs, rhs| lhs + rhs, |lhs, rhs| lhs * rhs];
             if check_operators(value, &operands, &operators) {
@@ -21,13 +21,13 @@ pub fn part_1() -> SolutionResult {
         })
         .sum();
 
-    Ok(result)
+    Ok(result.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
 
-    let result = iter_input(file)
+    let result: i64 = iter_input(file)
         .filter_map(|(value, operands)| {
             let operators = [
                 |lhs, rhs| lhs + rhs,
@@ -42,7 +42,7 @@ pub fn part_2() -> SolutionResult {
         })
         .sum();
 
-    Ok(result)
+    Ok(result.to_string())
 }
 
 pub fn iter_input(file: File) -> impl Iterator<Item = (i64, Vec<i64>)> {

@@ -156,15 +156,15 @@ pub fn part_1() -> SolutionResult {
         // display_cells(&cells, &robot_pos);
     }
 
-    let gps = cells
+    let gps: usize = cells
         .indexed_iter()
         .filter_map(|((y, x), cell)| match cell {
             Cell::Box => Some(GPS_FACTOR * y + x),
             _ => None,
         })
-        .sum::<usize>() as i64;
+        .sum();
 
-    Ok(gps)
+    Ok(gps.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -216,15 +216,15 @@ pub fn part_2() -> SolutionResult {
         }
         // display_wide_cells(&cells, &robot_pos);
     }
-    let gps = cells
+    let gps: usize = cells
         .indexed_iter()
         .filter_map(|((y, x), cell)| match cell {
             WideCell::Box(BoxCell::Left) => Some(GPS_FACTOR * y + x),
             _ => None,
         })
-        .sum::<usize>() as i64;
+        .sum();
 
-    Ok(gps)
+    Ok(gps.to_string())
 }
 
 fn read_input(file: File) -> (Array2<Cell>, Vec<Direction>, Vec2<usize>) {

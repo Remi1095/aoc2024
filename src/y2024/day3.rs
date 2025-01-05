@@ -30,7 +30,7 @@ pub fn part_1() -> SolutionResult {
     get_text_file(INPUT_URL)?.read_to_string(&mut text)?;
     let re = Regex::new(r"mul\(([0-9]+),([0-9]+)\)")?;
 
-    let result = re
+    let result: i64 = re
         .captures_iter(&text)
         .map(|c| {
             let (_, [lhs, rhs]) = c.extract();
@@ -38,7 +38,7 @@ pub fn part_1() -> SolutionResult {
         })
         .sum();
 
-    Ok(result)
+    Ok(result.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -127,7 +127,7 @@ pub fn part_2() -> SolutionResult {
     }
 
     let mut enable_mul = true;
-    let result = instructions
+    let result: i64 = instructions
         .iter()
         .filter_map(|instruction| {
             match instruction {
@@ -143,5 +143,5 @@ pub fn part_2() -> SolutionResult {
         })
         .sum();
 
-    Ok(result)
+    Ok(result.to_string())
 }

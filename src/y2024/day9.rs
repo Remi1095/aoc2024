@@ -46,14 +46,14 @@ pub fn part_1() -> SolutionResult {
         checksum += arithmetic_series(used.size, used.offset, used.offset + used.size - 1) * id;
     }
 
-    Ok(checksum as i64)
+    Ok(checksum.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
     let file = get_text_file(INPUT_URL)?;
     let (used_blocks, mut free_blocks) = read_input(file)?;
 
-    let checksum = used_blocks
+    let checksum: usize = used_blocks
         .into_iter()
         .enumerate()
         .rev()
@@ -84,9 +84,9 @@ pub fn part_2() -> SolutionResult {
                         * used_id,
                 )
         })
-        .sum::<usize>() as i64;
+        .sum();
 
-    Ok(checksum)
+    Ok(checksum.to_string())
 }
 
 fn read_input(mut file: File) -> Result<(Vec<Block>, Vec<Block>), Box<dyn Error>> {

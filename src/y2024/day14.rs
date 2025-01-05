@@ -64,7 +64,7 @@ pub fn part_1() -> SolutionResult {
     }
     let safety = top_left * top_right * bottom_left * bottom_right;
 
-    Ok(safety)
+    Ok(safety.to_string())
 }
 
 pub fn part_2() -> SolutionResult {
@@ -111,10 +111,10 @@ pub fn part_2() -> SolutionResult {
         if in_target_width >= target && in_target_height >= target {
             // println!("robots {} target {}", robots.len(), in_target_width);
             // display_positions(&positions);
-            return Ok(elapsed);
+            return Ok(elapsed.to_string());
         }
     }
-    Ok(0)
+    Err("Failed to solve".into())
 }
 
 fn read_input(file: File) -> Vec<Robot> {

@@ -13,7 +13,7 @@ use std::{
 };
 
 pub type AnyError = Box<dyn Error>;
-pub type SolutionResult = Result<i64, AnyError>;
+pub type SolutionResult = Result<String, AnyError>;
 pub type Runner = Box<dyn Fn() -> SolutionResult>;
 
 const INPUT_DIR: &str = "input";
@@ -49,6 +49,7 @@ pub fn solution_runners() -> HashMap<u32, Vec<Runner>> {
                 (14, vec![f(day14::part_1), f(day14::part_2)]),
                 (15, vec![f(day15::part_1), f(day15::part_2)]),
                 (16, vec![f(day16::part_1), f(day16::part_2)]),
+                (17, vec![f(day17::part_1), f(day17::part_2)]),
             ]
             .into_iter(),
         );
