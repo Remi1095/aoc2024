@@ -1,10 +1,12 @@
 use crate::{get_text_file, SolutionResult};
 use itertools::Itertools;
+use num::{Num, NumCast};
 use regex::Regex;
 use std::{
     collections::VecDeque,
     fs::File,
     io::{BufRead, BufReader},
+    ops::{Div, Rem},
     str::FromStr,
 };
 
@@ -51,38 +53,86 @@ impl Instruction {
     }
 }
 
+#[derive(Clone, Debug)]
+struct BitArray<const N: usize> {
+    array: [Option<bool>; N],
+}
+
+impl<const N: usize> BitArray<N> {
+    fn empty() -> Self {
+        Self { array: [None; N] }
+    }
+
+    fn from_int<T>(mut value: T) -> Self
+    where
+        T: Num + NumCast + Clone,
+    {
+        let mut array = [None; N];
+        let two: T = NumCast::from(2).unwrap();
+        for bit in &mut array {
+            *bit = Some((value.clone() % two.clone()).is_one());
+            value = value / two.clone();
+        }
+        Self { array }
+    }
+
+    fn bit_mask<T>(self, mask: T) -> Self
+    where
+        T: Num + NumCast + Clone,
+    {
+        let mask = BitArray::<N>::from_int(mask);
+        let mut new_array = [None; N];
+        for ((bit, mask_bit), new_bit) in self.array.into_iter().zip(mask.array).zip(&mut new_array)
+        {
+            *new_bit = bit.and_then(|b| {
+                if b && mask_bit.unwrap() {
+                    Some(b)
+                } else {
+                    None
+                }
+            });
+        }
+        Self { array: new_array }
+    }
+}
+
+type BitArray64 = BitArray<64>;
+
+#[derive(Clone, Debug)]
 enum Register {
     A,
     B,
     C,
 }
 
+#[derive(Clone, Debug)]
 enum Operand {
-    Literal(u64),
+    Literal(BitArray64),
     Variable(Register),
 }
 
 impl Operand {
-    fn unwrap_literal(self) -> u64 {
+    fn unwrap_literal(self) -> BitArray64 {
         match self {
-            Operand::Literal(val_) => val_,
-            Operand::Variable(_) => panic!("unwrap_literal on Operand::Variable"),
+            Self::Literal(val_) => val_,
+            Self::Variable(_) => panic!("unwrap_literal on Operand::Variable"),
         }
     }
 
     fn register_a() -> Self {
-        Operand::Variable(Register::A)
+        Self::Variable(Register::A)
     }
 
     fn register_b() -> Self {
-        Operand::Variable(Register::B)
+        Self::Variable(Register::B)
     }
 
     fn register_c() -> Self {
-        Operand::Variable(Register::C)
+        Self::Variable(Register::C)
     }
 }
 
+#[derive(Clone, Debug)]
 enum Operation {
     BXorB(Operand),
     BMaskLast3(Operand),
@@ -164,9 +214,9 @@ pub fn part_2() -> SolutionResult {
         let instruction = Instruction::from_opcode(opcode).unwrap();
 
         let operand = program[pointer + 1];
-        let literal = Operand::Literal(operand);
+        let literal = Operand::Literal(BitArray64::from_int(operand));
         let combo = match operand {
-            0..=3 => Operand::Literal(operand),
+            0..=3 => literal.clone(),
             4 => Operand::Variable(Register::A),
             5 => Operand::Variable(Register::B),
             6 => Operand::Variable(Register::C),
@@ -210,22 +260,34 @@ pub fn part_2() -> SolutionResult {
             pointer += 2
         }
     }
-    let last_jump = operations.iter().position(|op| matches!(op, Operation::AJump)).unwrap();
-    operations = operations.into_iter().skip(last_jump+1).collect();
-    let possible_register_a = vec![0];
+    let last_jump = operations
+        .iter()
+        .position(|op| matches!(op, Operation::AJump))
+        .unwrap();
+    operations = operations.into_iter().skip(last_jump + 1).collect();
+    println!("{:?}", operations);
+    let mut possible_registers = vec![(
+        BitArray64::from_int(0),
+        BitArray64::empty(),
+        BitArray64::empty(),
+    )];
     for operation in operations {
-        match operation {
-            // B = B ^ operand
-            Operation::BXorB(operand) => todo!(),
-            // B = operand & 0b111
-            Operation::BMaskLast3(operand) => todo!(),
-            // X = A >> operand,
-            Operation::RightShiftA { assign, value } => todo!(),
-            // output: operand & 0b111,
-            Operation::OutputMaskLast3(operand) => todo!(),
-            // if A != 0: jump,
-            Operation::AJump => todo!(),
+        let new_possible_registers = Vec::new();
+        for (register_a, register_b, register_c) in possible_registers.drain(..) {
+            new_possible_registers.push(match operation.clone() {
+                // B = B ^ operand
+                Operation::BXorB(operand) => todo!(),
+                // B = operand & 0b111
+                Operation::BMaskLast3(operand) => {}
+                // X = A >> operand,
+                Operation::RightShiftA { assign, value } => todo!(),
+                // output: operand & 0b111,
+                Operation::OutputMaskLast3(operand) => todo!(),
+                // if A != 0: jump,
+                Operation::AJump => todo!(),
+            });
         }
+        possible_registers.extend(new_possible_registers);
     }
 
     Err("Failed to solve".into())
