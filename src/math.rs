@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use ndarray::{Ix2, NdIndex};
 use num::{traits::{SaturatingAdd, SaturatingSub}, CheckedAdd, CheckedSub, NumCast, Signed, ToPrimitive};
 use std::{

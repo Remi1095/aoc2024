@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use petgraph::prelude::*;
 use rustc_hash::FxBuildHasher;
 

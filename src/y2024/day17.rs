@@ -6,7 +6,7 @@ use std::{
     collections::VecDeque,
     fs::File,
     io::{BufRead, BufReader},
-    ops::{Div, Rem},
+    iter,
     str::FromStr,
 };
 
@@ -76,21 +76,51 @@ impl<const N: usize> BitArray<N> {
         Self { array }
     }
 
-    fn bit_mask<T>(self, mask: T) -> Self
-    where
-        T: Num + NumCast + Clone,
-    {
-        let mask = BitArray::<N>::from_int(mask);
+    // self = X ^ other
+    fn solve_xor(self, other: Self) -> (Vec<Self>, Vec<Self>) {
+        let mut possible_values = vec![(Self::empty(), Self::empty())];
+        type BitIterator = Box<dyn Iterator<Item = Option<bool>>>;
+
+        for (idx, (bit, other_bit)) in self.array.into_iter().zip(other.array).enumerate() {
+            let length = possible_values.len();
+
+            let (result_iter, other_iter): (BitIterator, BitIterator) =
+                if let (Some(a), None) = (bit, other_bit) {
+                    possible_values.extend(possible_values.clone());
+
+                    (
+                        Box::new(
+                            iter::repeat(Some(false))
+                                .take(length)
+                                .chain(iter::repeat(Some(true)).take(length)),
+                        ),
+                        Box::new(
+                            iter::repeat(Some(a))
+                                .take(length)
+                                .chain(iter::repeat(Some(!a)).take(length)),
+                        ),
+                    )
+                } else {
+                    (
+                        Box::new(iter::repeat(bit.zip(other_bit).map(|(a, b)| a ^ b)).take(length)),
+                        Box::new(iter::repeat(other_bit).take(length)),
+                    )
+                };
+            for ((result_bit, other_bit), (result, other)) in
+                result_iter.zip(other_iter).zip(&mut possible_values)
+            {
+                result.array[idx] = result_bit;
+                other.array[idx] = other_bit;
+            }
+        }
+        possible_values.into_iter().unzip()
+    }
+
+    fn mask(self, mask: Self) -> Self {
         let mut new_array = [None; N];
         for ((bit, mask_bit), new_bit) in self.array.into_iter().zip(mask.array).zip(&mut new_array)
         {
-            *new_bit = bit.and_then(|b| {
-                if b && mask_bit.unwrap() {
-                    Some(b)
-                } else {
-                    None
-                }
-            });
+            *new_bit = bit.zip(mask_bit).filter(|(a, b)| *a && *b).map(|(a, _)| a);
         }
         Self { array: new_array }
     }
@@ -136,7 +166,7 @@ impl Operand {
 enum Operation {
     BXorB(Operand),
     BMaskLast3(Operand),
-    RightShiftA { assign: Register, value: Operand },
+    RightShiftA { assign: Register, operand: Operand },
     OutputMaskLast3(Operand),
     AJump,
 }
@@ -228,7 +258,7 @@ pub fn part_2() -> SolutionResult {
             // Instruction::Adv => register_a = register_a >> combo,
             Instruction::Adv => Operation::RightShiftA {
                 assign: Register::A,
-                value: combo,
+                operand: combo,
             },
             // Instruction::Bxl => register_b = register_b ^ operand,
             Instruction::Bxl => Operation::BXorB(literal),
@@ -248,12 +278,12 @@ pub fn part_2() -> SolutionResult {
             // Instruction::Bdv => register_b = register_a >> combo,
             Instruction::Bdv => Operation::RightShiftA {
                 assign: Register::B,
-                value: combo,
+                operand: combo,
             },
             // Instruction::Cdv => register_c = register_a >> combo,
             Instruction::Cdv => Operation::RightShiftA {
                 assign: Register::C,
-                value: combo,
+                operand: combo,
             },
         });
         if increment {
@@ -272,22 +302,60 @@ pub fn part_2() -> SolutionResult {
         BitArray64::empty(),
     )];
     for operation in operations {
-        let new_possible_registers = Vec::new();
-        for (register_a, register_b, register_c) in possible_registers.drain(..) {
-            new_possible_registers.push(match operation.clone() {
+        let mut new_possible_registers = Vec::new();
+        for registers in possible_registers.drain(..) {
+            let (mut register_a, mut register_b, mut register_c) = registers;
+            let get_operand_value = |operand: Operand| match operand {
+                Operand::Literal(bit_array) => bit_array,
+                Operand::Variable(Register::A) => register_a.clone(),
+                Operand::Variable(Register::B) => register_b.clone(),
+                Operand::Variable(Register::C) => register_c.clone(),
+            };
+
+            new_possible_registers.extend(match operation.clone() {
                 // B = B ^ operand
-                Operation::BXorB(operand) => todo!(),
+                Operation::BXorB(operand) => {
+                    let value = get_operand_value(operand.clone());
+                    let (new_register_b, possible_values) = register_b.solve_xor(value);
+                    let mut new_register_a = vec![register_a];
+                    let mut new_register_c = vec![register_c];
+                    match operand {
+                        Operand::Variable(Register::A) => new_register_a = possible_values,
+                        Operand::Variable(Register::C) => new_register_c = possible_values,
+                        _ => {}
+                    }
+                    new_register_b
+                        .into_iter()
+                        .zip(new_register_a.into_iter().cycle())
+                        .zip(new_register_c.into_iter().cycle())
+                        .map(|((b, a), c)| (a, b, c))
+                        .collect()
+                }
                 // B = operand & 0b111
-                Operation::BMaskLast3(operand) => {}
+                Operation::BMaskLast3(operand) => {
+                    let value = get_operand_value(operand);
+                    vec![(
+                        register_a,
+                        value.mask(BitArray64::from_int(0b111)),
+                        register_c,
+                    )]
+                }
                 // X = A >> operand,
-                Operation::RightShiftA { assign, value } => todo!(),
+                Operation::RightShiftA { assign, operand } => {
+                    let value = get_operand_value(operand);
+                    todo!()
+                }
                 // output: operand & 0b111,
-                Operation::OutputMaskLast3(operand) => todo!(),
+                Operation::OutputMaskLast3(operand) => {
+                    todo!()
+                }
                 // if A != 0: jump,
-                Operation::AJump => todo!(),
+                Operation::AJump => {
+                    todo!()
+                }
             });
         }
-        possible_registers.extend(new_possible_registers);
+        possible_registers = new_possible_registers;
     }
 
     Err("Failed to solve".into())
@@ -319,67 +387,6 @@ fn read_input(file: File) -> (Vec<u64>, u64, u64, u64) {
         .map(|d| d.parse().unwrap())
         .collect();
     (program, register_a, register_b, register_c)
-}
-
-fn check_execute(
-    program: &[u64],
-    instructions: &[Instruction],
-    mut register_a: u64,
-    mut register_b: u64,
-    mut register_c: u64,
-) -> bool {
-    let mut outputs = Vec::new();
-    let mut pointer = 0;
-    while pointer + 1 < program.len() {
-        let instruction = &instructions[pointer];
-        let operand = program[pointer + 1];
-        let combo = match operand {
-            0..=3 => operand,
-            4 => register_a,
-            5 => register_b,
-            6 => register_c,
-            _ => panic!(),
-        };
-        let mut increment = true;
-        match instruction {
-            Instruction::Adv => {
-                register_a = register_a / (1 << combo);
-            }
-            Instruction::Bxl => {
-                register_b = register_b ^ operand;
-            }
-            Instruction::Bst => {
-                register_b = combo & 0b111;
-            }
-            Instruction::Jnz => {
-                if register_a != 0 {
-                    pointer = operand as usize;
-                    increment = false;
-                }
-            }
-            Instruction::Bxc => {
-                register_b = register_b ^ register_c;
-            }
-            Instruction::Out => {
-                let output = combo & 0b111;
-                if output != program[outputs.len()] {
-                    return false;
-                }
-                outputs.push(output);
-            }
-            Instruction::Bdv => {
-                register_b = register_a / (1 << combo);
-            }
-            Instruction::Cdv => {
-                register_c = register_a / (1 << combo);
-            }
-        }
-
-        if increment {
-            pointer += 2;
-        }
-    }
-    program.len() == outputs.len()
 }
 
 fn parse_match<'a, T>(regex: &'a Regex, haystack: &'a str) -> Option<T>
